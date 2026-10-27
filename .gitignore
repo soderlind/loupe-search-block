@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+/build/
+/.phpunit.cache/
+/.phpunit.result.cache
+/.playwright-mcp/
+.DS_Store

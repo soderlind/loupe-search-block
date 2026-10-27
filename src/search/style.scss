@@ -1,0 +1,168 @@
+.loupe-search-block {
+	--loupe-search-gap: 1rem;
+	--loupe-search-muted: color-mix(in srgb, currentColor 65%, transparent);
+	--loupe-search-border: color-mix(in srgb, currentColor 20%, transparent);
+
+	&__form {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	&__field {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	&__input {
+		flex: 1;
+		min-width: 0;
+		padding: 0.5rem 0.75rem;
+		font: inherit;
+		border: 1px solid var(--loupe-search-border);
+		border-radius: 4px;
+		background: transparent;
+		color: inherit;
+	}
+
+	&__controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
+	}
+
+	&__control {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9em;
+
+		select {
+			font: inherit;
+		}
+	}
+
+	&__status {
+		margin: 0.75rem 0;
+		font-size: 0.9em;
+		color: var(--loupe-search-muted);
+
+		&:empty {
+			margin: 0;
+		}
+	}
+
+	&__panel {
+		display: grid;
+		gap: var(--loupe-search-gap);
+
+		&.is-loading .loupe-search-block__results {
+			opacity: 0.6;
+		}
+
+		&:has(.loupe-search-block__facets:not([hidden])) {
+			@media (min-width: 782px) {
+				grid-template-columns: minmax(10rem, 14rem) 1fr;
+			}
+		}
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	&__facets {
+		display: grid;
+		gap: var(--loupe-search-gap);
+		align-content: start;
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	&__facet {
+		margin: 0;
+		padding: 0;
+		border: 0;
+
+		legend {
+			padding: 0;
+			margin-bottom: 0.25rem;
+			font-weight: 600;
+		}
+	}
+
+	&__facet-option {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		font-size: 0.9em;
+	}
+
+	&__count {
+		margin-left: auto;
+		color: var(--loupe-search-muted);
+	}
+
+	&__results {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		transition: opacity 0.15s;
+	}
+
+	&__result {
+		padding: 0.75rem 0;
+		border-bottom: 1px solid var(--loupe-search-border);
+
+		&:first-child {
+			padding-top: 0;
+		}
+	}
+
+	&__title {
+		font-weight: 600;
+	}
+
+	&__type {
+		margin-left: 0.5rem;
+		font-size: 0.8em;
+		color: var(--loupe-search-muted);
+	}
+
+	&__excerpt {
+		margin: 0.25rem 0 0;
+		font-size: 0.9em;
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	mark {
+		background: color-mix(in srgb, #ffd700 45%, transparent);
+		color: inherit;
+		padding: 0 0.1em;
+	}
+
+	&__pagination {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		margin-top: var(--loupe-search-gap);
+
+		&[hidden] {
+			display: none;
+		}
+
+		button[disabled] {
+			opacity: 0.5;
+			cursor: default;
+		}
+	}
+
+	[hidden] {
+		display: none !important;
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "loupe-search/search",
+	"version": "1.0.0",
+	"title": "Loupe Search",
+	"category": "widgets",
+	"icon": "search",
+	"description": "Search this site with live results as you type, a post type filter, category and tag facets, and sorting.",
+	"keywords": [ "search", "loupe", "facets", "filter" ],
+	"textdomain": "loupe-search-block",
+	"supports": {
+		"html": false,
+		"interactivity": true,
+		"align": [ "wide", "full" ],
+		"spacing": { "margin": true, "padding": true },
+		"color": { "background": true, "text": true }
+	},
+	"attributes": {
+		"label": { "type": "string", "default": "" },
+		"placeholder": { "type": "string", "default": "" },
+		"perPage": { "type": "number", "default": 10 },
+		"showTypeFilter": { "type": "boolean", "default": true },
+		"showFacets": { "type": "boolean", "default": true },
+		"showSort": { "type": "boolean", "default": true },
+		"defaultSort": {
+			"type": "string",
+			"enum": [ "relevance", "newest", "oldest", "title_asc", "title_desc" ],
+			"default": "relevance"
+		},
+		"showExcerpt": { "type": "boolean", "default": true },
+		"highlight": { "type": "boolean", "default": true }
+	},
+	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

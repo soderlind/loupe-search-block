@@ -1,0 +1,31 @@
+# Files and directories excluded from the distributed plugin zip / wp.org payload.
+# Consumed via rsync --exclude-from in the build-zip workflows.
+
+# Version control / CI / editor
+.distignore
+.git/
+.github/
+.gitignore
+.DS_Store
+.playwright-mcp/
+
+# Tests
+tests/
+phpunit.xml.dist
+.phpunit.cache/
+.phpunit.result.cache
+
+# JS tooling and sources (the compiled block ships in build/).
+node_modules/
+package.json
+package-lock.json
+src/
+
+# Composer is dev-only (PHPUnit); the plugin has no runtime dependencies.
+composer.json
+composer.lock
+vendor/
+
+# Documentation (GitHub-only; readme.txt is kept for wp.org)
+README.md
+CHANGELOG.md
