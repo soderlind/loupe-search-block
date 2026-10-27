@@ -44,7 +44,7 @@ Facets and sorts follow Loupe Search's rules: when a search covers several post 
 
 The block also supports wide/full alignment, margin, padding, and text and background colors.
 
-<img src=".wordpress-org/screenshot-1.png" alt="Loupe Search Block screenshot">
+<img src=".wordpress-org/screenshot-1.png" alt="Loupe Search Block screenshot" border="1">
 
 ## Development
 
