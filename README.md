@@ -4,8 +4,11 @@ A search block for [Loupe Search](https://github.com/soderlind/loupe-search): li
 
 Loupe Search itself is engine-only. This add-on talks to it only through its public REST API ([ADR 0002](https://github.com/soderlind/loupe-search/blob/main/docs/adr/0002-search-block-ships-as-add-on.md)).
 
-<video src=".wordpress-org/loupe-search-block-showcase.mp4" type="video/mp4" controls alt="Loupe Search Block showcase">
-</video>
+
+
+https://github.com/user-attachments/assets/2a1d6865-4ebb-41eb-9a22-ca9ca5e46bdb
+
+
 
 ## Requirements
 
