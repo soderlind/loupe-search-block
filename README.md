@@ -46,20 +46,20 @@ Loupe Search builds the search index; this add-on provides the search block.
 
 ## Block settings
 
-Select the block and open its settings sidebar. Settings apply to that block, so different pages can have different search experiences.
+Select the block and open its settings sidebar. Settings are grouped in the **Search**, **Filters**, **Sorting**, and **Results** panels and apply to that block, so different pages can have different search experiences. When a filter needs a field setting in Loupe Search, the switch's help text says which one.
 
 | Setting | Default | What it does |
 | --- | --- | --- |
 | Label | Search | Text above the search input |
 | Placeholder | Search… | Hint shown inside the empty input |
 | Results per page | 10 | Choose 1–50 in the editor |
-| Show post type filter | On | Lets visitors choose Posts, Pages, or another indexed content type; hidden if only one is indexed |
-| Show taxonomy facets | On | Checkbox filters for categories, tags, and custom taxonomies |
-| Show author filter | On | Checkbox filter showing author names |
-| Show custom field facets | On | Checkbox filters for other eligible filterable fields |
-| Custom fields | All | Tick the custom fields this block shows as facets. Only fields Loupe Search reports as Filterable are listed. **Reset to all fields** brings back the default, which also includes fields made filterable later |
-| Show date filter | Off | Published **From** and **To** date inputs |
-| Show sort options | On | Offers the sort orders allowed by your field settings |
+| Post type filter | On | Lets visitors choose Posts, Pages, or another indexed content type; hidden if only one is indexed |
+| Taxonomy facets | On | Checkbox filters for categories, tags, and custom taxonomies |
+| Author filter | On | Checkbox filter showing author names |
+| Custom field facets | On | Checkbox filters for other eligible filterable fields |
+| Custom field checkboxes | All | Shown under **Custom field facets**. Tick the custom fields this block shows as facets. Only fields Loupe Search reports as Filterable are listed. **Reset to all fields** brings back the default, which also includes fields made filterable later |
+| Date filter | Off | Published **From** and **To** date inputs |
+| Sort options | On | Offers the sort orders allowed by your field settings |
 | Default sort | Relevance | Initial result order; falls back to Relevance if unavailable |
 | Show excerpt | On | Shows a text snippet below each result |
 | Highlight matches | On | Highlights matching words in titles and snippets |

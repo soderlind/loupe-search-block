@@ -52,6 +52,9 @@ Yes, if Search insights is enabled in Loupe Search. Only the query a visitor set
 
 == Changelog ==
 
+= Unreleased =
+* Calmer block settings: separate Filters and Sorting panels, with setup hints as help text.
+
 = 1.1.1 =
 * Choose which custom fields each block shows as facets. Existing blocks keep showing every eligible field.
 * README rewritten and a step-by-step tutorial (TUTORIAL.md) added.

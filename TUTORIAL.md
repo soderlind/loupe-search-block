@@ -72,7 +72,7 @@ Checkbox filters are called **facets**. They show values found in the matching r
 Each filter needs two things:
 
 1. The field enabled in **Settings → Loupe Search → Fields**, followed by saving and reindexing.
-2. The corresponding switch enabled in the block's **Filters and sorting** panel, followed by updating the page.
+2. The corresponding switch enabled in the block's **Filters** panel, followed by updating the page.
 
 For each example below, search for a word that matches several posts. If you have indexed more than one content type, choose **Posts** in the front-end **Type** menu first.
 
@@ -80,7 +80,7 @@ For each example below, search for a word that matches several posts. If you hav
 
 1. In Loupe Search's **Fields** tab, find the relevant taxonomy under the content type. Categories use `taxonomy_category`; tags use `taxonomy_post_tag`.
 2. Enable **Indexable** and **Filterable**, save, and reindex.
-3. In the block's **Filters and sorting** panel, leave **Show taxonomy facets** on.
+3. In the block's **Filters** panel, leave **Taxonomy facets** on.
 4. Update the page and search on the front end.
 5. Select a category or tag checkbox.
 
@@ -90,7 +90,7 @@ For each example below, search for a word that matches several posts. If you hav
 
 1. In the **Fields** tab, find **Post Author** (`post_author`) for Posts.
 2. Enable **Indexable** and **Filterable**, save, and reindex.
-3. In the block settings, leave **Show author filter** on, then update the page.
+3. In the block settings, leave **Author filter** on, then update the page.
 4. Search on the front end and select an author.
 
 **Expected result:** The **Authors** group shows display names rather than user IDs. Selecting a name narrows results to that author's content.
@@ -103,18 +103,18 @@ Use this when your content already stores useful metadata, such as a reading lev
 2. Give some posts the value `Beginner` and others `Advanced`. Use the same key and consistent text values across the posts.
 3. Return to **Settings → Loupe Search → Fields** and find `reading_level` under Posts. If it is not listed, confirm that you have saved it on posts of that type, then reload the settings page.
 4. Enable **Indexable** and **Filterable**, save, and reindex.
-5. In the block settings, leave **Show custom field facets** on. Under **Custom fields**, tick **Reading Level** (all eligible fields are ticked until you change the list), then update the page.
+5. In the block settings, leave **Custom field facets** on. In the checkboxes below it, tick **Reading Level** (all eligible fields are ticked until you change the list), then update the page.
 6. Search for a word shared by those posts and select **Beginner** under **Reading Level**.
 
 **Expected result:** Only matching beginner posts remain. The block turns `reading_level` into the heading **Reading Level** automatically.
 
-Prefer fields with a small set of repeated, plain-text values. Unique IDs, long text, serialized objects, and geographic data are not useful checkbox lists. Each block offers every eligible custom field until you untick some under **Custom fields**, so two blocks on the same page can show different fields. Fields that later stop being filterable are skipped automatically. The block does not create fields or populate their values.
+Prefer fields with a small set of repeated, plain-text values. Unique IDs, long text, serialized objects, and geographic data are not useful checkbox lists. Each block offers every eligible custom field until you untick some under **Custom field facets**, so two blocks on the same page can show different fields. Fields that later stop being filterable are skipped automatically. The block does not create fields or populate their values.
 
 ### Published date range
 
 1. In the **Fields** tab, find **Post Date** (`post_date`) for each content type you want to filter.
 2. Confirm that it is **Indexable** and **Filterable**, save the field settings, and reindex. Explicitly save these settings even if date options already appear in the block.
-3. In the block settings, turn on **Show date filter**. It is off by default.
+3. In the block settings, turn on **Date filter**. It is off by default.
 4. Update the page and search on the front end.
 5. Enter a **From** date, a **To** date, or both under **Published**.
 
@@ -131,7 +131,7 @@ The same shared-field rule applies to date filtering and sorting. It prevents th
 1. For date sorting, make **Post Date** (`post_date`) **Indexable** and **Sortable** in Loupe Search.
 2. For title sorting, make **Post Title** (`post_title`) **Indexable** and **Sortable**.
 3. Save and reindex after changing these settings.
-4. Select the block and enable **Show sort options**.
+4. Select the block and, in the **Sorting** panel, enable **Sort options**.
 5. Choose a **Default sort**, or keep **Relevance** to put the best matches first.
 6. In **Results**, leave **Show excerpt** and **Highlight matches** on if you want snippets with matching words highlighted.
 7. Use the block's available alignment, spacing, and color controls to fit your theme, then update the page.
@@ -160,11 +160,11 @@ Your search page is ready. Add a link to it in your site's navigation so visitor
 | No Loupe Search block in the inserter | Confirm Loupe Search Block is active and installed from the built release ZIP; check the WordPress and PHP requirements. |
 | A message saying Loupe Search must be active | Activate the companion plugin, select at least one searchable content type, save, and reindex. |
 | No results for a word you know exists | Check that the content is published and its type is indexed; confirm title/content are Indexable, and reindex. Clear selected filters and date inputs. |
-| An author, taxonomy, or custom-field filter is missing | Check the block switch and the field's Indexable/Filterable settings. Save and reindex, search for matching content, and try a specific Type instead of All types. |
+| An author, taxonomy, or custom-field filter is missing | Check the block switch and its help text, and the field's Indexable/Filterable settings. Save and reindex, search for matching content, and try a specific Type instead of All types. |
 | A custom field is missing from Fields | Save a value for that field on content of the relevant type, then reload Fields. The block itself does not register custom fields. |
 | The date filter gives no results unexpectedly | Explicitly save Post Date as Indexable and Filterable for each searched content type, then reindex. Some indexes may lack the date configuration even when date controls are offered. Check the selected range too. |
 | Date or title sort options are missing or ineffective | Save the corresponding field as Indexable and Sortable, reindex, and check that all searched content types allow it. |
-| The Type menu is missing | It is hidden when only one content type is indexed, or when Show post type filter is off. |
+| The Type menu is missing | It is hidden when only one content type is indexed, or when **Post type filter** is off. |
 | The page navigates away when you search | Without JavaScript, the standard search-form fallback is expected. If you expected live results, check that the compiled assets load and that scripts or REST requests are not blocked. |
 
 For the full list of block settings and developer hooks, return to the [README](README.md#block-settings).
