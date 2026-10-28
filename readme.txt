@@ -5,7 +5,7 @@ Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
 Requires Plugins: loupe-search
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL-2.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -52,7 +52,7 @@ Yes, if Search insights is enabled in Loupe Search. Only the query a visitor set
 
 == Changelog ==
 
-= Unreleased =
+= 1.1.2 =
 * Calmer block settings: separate Filters and Sorting panels, with setup hints as help text.
 * Editor canvas preview shows the search controls enabled for each block. Facet values load after searching.
 

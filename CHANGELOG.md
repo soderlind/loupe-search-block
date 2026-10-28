@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.2] - 2026-10-28
 
 ### Added
 - Editor canvas preview shows the search controls enabled for each block. Facet values remain dynamic and load after searching.
@@ -48,6 +48,7 @@ Completes the filters requested in [soderlind/loupe-search#71](https://github.co
 
 Requires Loupe Search 1.4.0 or later. See [soderlind/loupe-search#71](https://github.com/soderlind/loupe-search/issues/71).
 
+[1.1.2]: https://github.com/soderlind/loupe-search-block/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/soderlind/loupe-search-block/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/soderlind/loupe-search-block/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/soderlind/loupe-search-block/releases/tag/1.0.0
