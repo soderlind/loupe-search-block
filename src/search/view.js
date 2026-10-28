@@ -17,6 +17,7 @@ import {
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
+	selectedValues,
 	format,
 	toResult,
 } from './lib';
@@ -104,9 +105,13 @@ const { state, actions } = store( 'loupe-search/search', {
 				ctx.option
 			);
 		},
+		get dateAllowed() {
+			const ctx = getContext();
+			return profileFor( ctx.profiles, ctx.postType ).date;
+		},
 		get bucketChecked() {
 			const ctx = getContext();
-			const values = ctx.selected[ ctx.group.field ] || [];
+			const values = selectedValues( ctx.selected, ctx.group.field );
 			return values.includes( ctx.bucket.value );
 		},
 	},
@@ -166,11 +171,25 @@ const { state, actions } = store( 'loupe-search/search', {
 			actions.search( false );
 		},
 
+		setDateFrom( event ) {
+			const ctx = getContext();
+			ctx.dateFrom = event.target.value;
+			ctx.page = 1;
+			actions.search( false );
+		},
+
+		setDateTo( event ) {
+			const ctx = getContext();
+			ctx.dateTo = event.target.value;
+			ctx.page = 1;
+			actions.search( false );
+		},
+
 		toggleFacet( event ) {
 			const ctx = getContext();
 			const field = ctx.group.field;
 			const value = ctx.bucket.value;
-			const current = ( ctx.selected[ field ] || [] ).filter(
+			const current = selectedValues( ctx.selected, field ).filter(
 				( v ) => v !== value
 			);
 			if ( event.target.checked ) {
@@ -241,14 +260,13 @@ const { state, actions } = store( 'loupe-search/search', {
 				);
 				ctx.total = Number( data.pagination?.total ) || 0;
 				ctx.totalPages = Number( data.pagination?.total_pages ) || 0;
-				ctx.facetGroups = ctx.showFacets
-					? buildFacetGroups(
-							profileFor( ctx.profiles, ctx.postType ).facets,
-							data.facets,
-							ctx.selected,
-							ctx.facetLabels
-						)
-					: [];
+				ctx.facetGroups = buildFacetGroups(
+					profileFor( ctx.profiles, ctx.postType ).facets,
+					data.facets,
+					ctx.selected,
+					ctx.facetLabels,
+					ctx.valueLabels
+				);
 			} catch {
 				if ( id === ctx.requestId ) {
 					ctx.error = true;

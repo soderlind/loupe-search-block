@@ -1,21 +1,25 @@
 import {
 	buildFacetGroups,
 	buildPayload,
+	dateRangeItems,
 	decodeEntities,
 	format,
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
+	selectedValues,
 	sanitizeHighlight,
 	toResult,
 } from '../../src/search/lib';
 
 const profiles = {
-	all: { facets: [], sorts: [ 'relevance', 'newest', 'oldest' ] },
+	all: { facets: [], sorts: [ 'relevance', 'newest', 'oldest' ], date: true },
 	post: {
-		facets: [ 'taxonomy_category', 'taxonomy_post_tag' ],
+		facets: [ 'taxonomy_category', 'taxonomy_post_tag', 'post_author' ],
 		sorts: [ 'relevance', 'newest', 'oldest', 'title_asc', 'title_desc' ],
+		date: true,
 	},
+	page: { facets: [], sorts: [ 'relevance' ], date: false },
 };
 
 const baseCtx = {
@@ -26,7 +30,9 @@ const baseCtx = {
 	perPage: 5,
 	profiles,
 	selected: {},
-	showFacets: true,
+	showDate: false,
+	dateFrom: '',
+	dateTo: '',
 	highlight: true,
 	showExcerpt: true,
 };
@@ -40,10 +46,11 @@ describe( 'normalizeQuery', () => {
 
 describe( 'profileFor', () => {
 	it( 'falls back to "all" and then to relevance only', () => {
-		expect( profileFor( profiles, 'page' ) ).toBe( profiles.all );
+		expect( profileFor( profiles, 'movie' ) ).toBe( profiles.all );
 		expect( profileFor( undefined, 'post' ) ).toEqual( {
 			facets: [],
 			sorts: [ 'relevance' ],
+			date: false,
 		} );
 	} );
 } );
@@ -68,7 +75,11 @@ describe( 'buildPayload', () => {
 			...baseCtx,
 			postType: 'post',
 			sort: 'title_desc',
-			selected: { taxonomy_category: [ 'News' ], taxonomy_post_tag: [] },
+			selected: {
+				taxonomy_category: [ 'News' ],
+				taxonomy_post_tag: [],
+				post_author: [ '14' ],
+			},
 		} );
 		expect( payload.postTypes ).toEqual( [ 'post' ] );
 		expect( payload.sort ).toEqual( [
@@ -83,11 +94,18 @@ describe( 'buildPayload', () => {
 					op: 'in',
 					value: [ 'News' ],
 				},
+				{
+					type: 'pred',
+					field: 'post_author',
+					op: 'in',
+					value: [ '14' ],
+				},
 			],
 		} );
 		expect( payload.facets.map( ( f ) => f.field ) ).toEqual( [
 			'taxonomy_category',
 			'taxonomy_post_tag',
+			'post_author',
 		] );
 	} );
 
@@ -97,14 +115,45 @@ describe( 'buildPayload', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'omits facets when they are turned off', () => {
+	it( 'omits facets when the profile has none', () => {
 		const payload = buildPayload( {
 			...baseCtx,
-			postType: 'post',
-			showFacets: false,
+			selected: { taxonomy_category: [ 'News' ] },
 		} );
 		expect( payload.facets ).toBeUndefined();
 		expect( payload.filter ).toBeUndefined();
+	} );
+
+	it( 'adds the date range when the date filter is shown and allowed', () => {
+		const ctx = {
+			...baseCtx,
+			showDate: true,
+			dateFrom: '2026-01-01',
+			dateTo: '2026-06-30',
+		};
+		expect( buildPayload( ctx ).filter ).toEqual( {
+			type: 'and',
+			items: [
+				{
+					type: 'pred',
+					field: 'post_date',
+					op: 'gte',
+					value: '2026-01-01',
+				},
+				{
+					type: 'pred',
+					field: 'post_date',
+					op: 'lte',
+					value: '2026-06-30 23:59:59',
+				},
+			],
+		} );
+		expect(
+			buildPayload( { ...ctx, showDate: false } ).filter
+		).toBeUndefined();
+		expect(
+			buildPayload( { ...ctx, postType: 'page' } ).filter
+		).toBeUndefined();
 	} );
 
 	it( 'does not highlight or crop when highlighting is off', () => {
@@ -130,7 +179,58 @@ describe( 'buildPayload', () => {
 	} );
 } );
 
+describe( 'dateRangeItems', () => {
+	it( 'uses only valid dates and makes the end date inclusive', () => {
+		expect( dateRangeItems( '', '' ) ).toEqual( [] );
+		expect( dateRangeItems( 'yesterday', '2026-2-1' ) ).toEqual( [] );
+		expect( dateRangeItems( '', '2026-02-01' ) ).toEqual( [
+			{
+				type: 'pred',
+				field: 'post_date',
+				op: 'lte',
+				value: '2026-02-01 23:59:59',
+			},
+		] );
+	} );
+} );
+
 describe( 'pruneSelected', () => {
+	it( 'ignores inherited and non-array selections for custom fields', () => {
+		const fields = [ 'constructor', 'toString', '__proto__' ];
+		const selected = {};
+		const facets = Object.fromEntries(
+			fields.map( ( field ) => [
+				field,
+				{ buckets: [ { value: 'A', count: 1 } ] },
+			] )
+		);
+		fields.forEach( ( field ) => {
+			expect( selectedValues( selected, field ) ).toEqual( [] );
+		} );
+		expect(
+			selectedValues( { constructor: 'bad' }, 'constructor' )
+		).toEqual( [] );
+		expect( pruneSelected( selected, fields ) ).toEqual( {} );
+		const ctx = {
+			...baseCtx,
+			profiles: { all: { facets: fields, sorts: [ 'relevance' ] } },
+		};
+		expect( buildPayload( ctx ).filter ).toBeUndefined();
+		expect(
+			buildFacetGroups( fields, facets, selected, {} ).map(
+				( g ) => g.label
+			)
+		).toEqual( fields );
+		const own = Object.fromEntries(
+			fields.map( ( field ) => [ field, [ 'A' ] ] )
+		);
+		expect( pruneSelected( own, fields ) ).toEqual( own );
+		expect(
+			buildPayload( { ...ctx, selected: own } ).filter.items
+		).toHaveLength( 3 );
+		expect( buildFacetGroups( fields, {}, own, {} ) ).toHaveLength( 3 );
+	} );
+
 	it( 'keeps only non-empty selections for allowed fields', () => {
 		expect(
 			pruneSelected(
@@ -163,10 +263,33 @@ describe( 'buildFacetGroups', () => {
 				field: 'taxonomy_category',
 				label: 'Categories',
 				buckets: [
-					{ value: 'News', count: 3 },
-					{ value: 'Sport', count: 0 },
+					{ value: 'News', label: 'News', count: 3 },
+					{ value: 'Sport', label: 'Sport', count: 0 },
 				],
 			},
+		] );
+	} );
+
+	it( 'labels values, e.g. author IDs with names, and falls back to the value', () => {
+		const groups = buildFacetGroups(
+			[ 'post_author' ],
+			{
+				post_author: {
+					buckets: [
+						{ value: 1, count: 4 },
+						{ value: '99', count: 1 },
+						{ value: 'constructor', count: 1 },
+					],
+				},
+			},
+			{},
+			{ post_author: 'Authors' },
+			{ post_author: { 1: 'Per' } }
+		);
+		expect( groups[ 0 ].buckets ).toEqual( [
+			{ value: '1', label: 'Per', count: 4 },
+			{ value: '99', label: '99', count: 1 },
+			{ value: 'constructor', label: 'constructor', count: 1 },
 		] );
 	} );
 } );
