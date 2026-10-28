@@ -1,6 +1,6 @@
 {
 	"name": "loupe-search-block",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Search block for Loupe Search: live search-as-you-type, post-type filter, category/tag facets and sorting.",
 	"private": true,
 	"license": "GPL-2.0-or-later",
