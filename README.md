@@ -75,6 +75,12 @@ You can also adjust alignment, spacing, and text/background colors with the edit
 
 The block name is `loupe-search/search`. The add-on communicates with Loupe Search through its public REST API only. See the [architecture decision](https://github.com/soderlind/loupe-search/blob/main/docs/adr/0002-search-block-ships-as-add-on.md).
 
+### Translations
+
+Norwegian Bokmål (`nb_NO`) is included for the editor and front end. Select **Norsk bokmål** under **Settings → General → Site Language** for visitors; the editor follows the user's profile language. Custom labels, placeholders, and field names are not translated automatically.
+
+After changing translations, run `npm run i18n:build` to regenerate the bundled MO, PHP (`.l10n.php`) and JavaScript JSON files. After changing source strings, run `npm run build` and `npm run i18n:make-pot` first, then update the PO file.
+
 <details>
 <summary>Customize facet fields and labels with PHP</summary>
 

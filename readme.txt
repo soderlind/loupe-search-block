@@ -52,6 +52,9 @@ Yes, if Search insights is enabled in Loupe Search. Only the query a visitor set
 
 == Changelog ==
 
+= Unreleased =
+* Norwegian Bokmål translations for the editor and front end.
+
 = 1.1.2 =
 * Calmer block settings: separate Filters and Sorting panels, with setup hints as help text.
 * Editor canvas preview shows the search controls enabled for each block. Facet values load after searching.

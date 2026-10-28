@@ -38,6 +38,8 @@ add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\editor_data' );
  * Register the block from the build folder.
  */
 function register_block(): void {
+	load_plugin_textdomain( 'loupe-search-block', false, dirname( plugin_basename( FILE ) ) . '/languages' );
+
 	$block_dir = __DIR__ . '/build/search';
 	if ( ! file_exists( $block_dir . '/block.json' ) ) {
 		return;
