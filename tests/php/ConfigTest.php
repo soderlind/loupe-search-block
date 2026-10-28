@@ -140,4 +140,63 @@ final class ConfigTest extends TestCase {
 		$this->assertSame( [], Config::parse_fields_response( null ) );
 		$this->assertSame( [], Config::parse_fields_response( [ 'code' => 'rest_no_route' ] ) );
 	}
+
+	private const PRODUCT = [
+		'label'      => 'Products',
+		'filterable' => [ 'post_author', 'taxonomy_category', 'color', 'size', 'post_rating' ],
+		'sortable'   => [],
+	];
+
+	public function test_null_selection_keeps_every_custom_facet(): void {
+		$this->assertSame(
+			[ 'taxonomy_category', 'post_author', 'color', 'size', 'post_rating' ],
+			Config::profile( [ self::PRODUCT ], Config::FACET_KINDS, null )[ 'facets' ]
+		);
+	}
+
+	public function test_selection_limits_custom_facets_only(): void {
+		$this->assertSame(
+			[ 'taxonomy_category', 'post_author', 'size' ],
+			Config::profile( [ self::PRODUCT ], Config::FACET_KINDS, [ 'size', 'gone' ] )[ 'facets' ]
+		);
+	}
+
+	public function test_empty_selection_hides_custom_facets(): void {
+		$this->assertSame(
+			[ 'taxonomy_category', 'post_author' ],
+			Config::profile( [ self::PRODUCT ], Config::FACET_KINDS, [] )[ 'facets' ]
+		);
+	}
+
+	public function test_selection_is_applied_to_every_profile(): void {
+		$profiles = Config::profiles( [ 'post' => self::POST, 'product' => self::PRODUCT ], [ Config::KIND_CUSTOM ], [ 'color' ] );
+
+		$this->assertSame( [], $profiles[ 'post' ][ 'facets' ] );
+		$this->assertSame( [ 'color' ], $profiles[ 'product' ][ 'facets' ] );
+	}
+
+	public function test_custom_field_options_lists_filterable_custom_fields_per_type(): void {
+		$book = [
+			'label'      => 'Books',
+			'filterable' => [ 'color', 'isbn', 'taxonomy_genre' ],
+			'sortable'   => [],
+		];
+
+		$this->assertSame(
+			[
+				'color'       => [ 'Products', 'Books' ],
+				'size'        => [ 'Products' ],
+				'post_rating' => [ 'Products' ],
+				'isbn'        => [ 'Books' ],
+			],
+			Config::custom_field_options( [ 'post' => self::POST, 'product' => self::PRODUCT, 'book' => $book ] )
+		);
+	}
+
+	public function test_custom_field_selection_reads_the_attribute(): void {
+		$this->assertNull( Config::custom_field_selection( null ) );
+		$this->assertNull( Config::custom_field_selection( 'color' ) );
+		$this->assertSame( [], Config::custom_field_selection( [] ) );
+		$this->assertSame( [ 'color', 'size' ], Config::custom_field_selection( [ 'color', 3, 'size' ] ) );
+	}
 }

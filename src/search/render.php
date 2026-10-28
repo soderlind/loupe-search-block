@@ -38,7 +38,7 @@ if ( ! empty( $attributes[ 'showAuthorFilter' ] ) ) {
 if ( ! empty( $attributes[ 'showCustomFields' ] ) ) {
 	$loupe_kinds[] = Config::KIND_CUSTOM;
 }
-$loupe_profiles = Config::profiles( $loupe_types, $loupe_kinds );
+$loupe_profiles = Config::profiles( $loupe_types, $loupe_kinds, Config::custom_field_selection( $attributes[ 'customFields' ] ?? null ) );
 
 $loupe_sort_labels = [
 	'relevance'  => __( 'Relevance', 'loupe-search-block' ),

@@ -5,7 +5,7 @@ Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
 Requires Plugins: loupe-search
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -21,7 +21,7 @@ Loupe Search Block is an add-on to [Loupe Search](https://wordpress.org/plugins/
 * Post type filter for every post type Loupe Search indexes.
 * Taxonomy facets (categories, tags and custom taxonomies) with result counts, for fields marked *Filterable* in Settings → Loupe Search.
 * Author facet with author names, when *Post Author* is *Filterable*.
-* Facets for any other *Filterable* field, such as a custom field.
+* Facets for any other *Filterable* field, such as a custom field. Choose which custom fields each block shows.
 * Published date range filter (From / To), when `post_date` is *Filterable*. Off by default.
 * Sort by relevance, newest, oldest, or title A–Z / Z–A. Only sort options allowed in Settings → Loupe Search are shown.
 * Highlighted snippets around the matched words.
@@ -51,6 +51,10 @@ Title sorting needs `post_title` to be *Sortable* in Settings → Loupe Search �
 Yes, if Search insights is enabled in Loupe Search. Only the query a visitor settles on, or submits with Enter, is counted.
 
 == Changelog ==
+
+= 1.1.1 =
+* Choose which custom fields each block shows as facets. Existing blocks keep showing every eligible field.
+* README rewritten and a step-by-step tutorial (TUTORIAL.md) added.
 
 = 1.1.0 =
 * Added author, custom-field and custom-taxonomy facets, and a Published date range filter.

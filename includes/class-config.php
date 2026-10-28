@@ -141,12 +141,13 @@ final class Config {
 	 *
 	 * @param array<string,array{label:string,filterable:array<int,string>,sortable:array<int,string>}> $types
 	 * @param array<int,string> $kinds Facet kinds to offer.
+	 * @param array<int,string>|null $custom_fields Custom fields chosen in the block, or null for all.
 	 * @return array<string,array{facets:array<int,string>,sorts:array<int,string>,date:bool}>
 	 */
-	public static function profiles( array $types, array $kinds = self::FACET_KINDS ): array {
-		$profiles = [ 'all' => self::profile( array_values( $types ), $kinds ) ];
+	public static function profiles( array $types, array $kinds = self::FACET_KINDS, ?array $custom_fields = null ): array {
+		$profiles = [ 'all' => self::profile( array_values( $types ), $kinds, $custom_fields ) ];
 		foreach ( $types as $post_type => $settings ) {
-			$profiles[ $post_type ] = self::profile( [ $settings ], $kinds );
+			$profiles[ $post_type ] = self::profile( [ $settings ], $kinds, $custom_fields );
 		}
 
 		return $profiles;
@@ -157,9 +158,10 @@ final class Config {
 	 *
 	 * @param array<int,array{filterable:array<int,string>,sortable:array<int,string>}> $settings
 	 * @param array<int,string> $kinds Facet kinds to offer.
+	 * @param array<int,string>|null $custom_fields Custom fields chosen in the block, or null for all.
 	 * @return array{facets:array<int,string>,sorts:array<int,string>,date:bool}
 	 */
-	public static function profile( array $settings, array $kinds = self::FACET_KINDS ): array {
+	public static function profile( array $settings, array $kinds = self::FACET_KINDS, ?array $custom_fields = null ): array {
 		if ( empty( $settings ) ) {
 			return [ 'facets' => [], 'sorts' => [ 'relevance' ], 'date' => false ];
 		}
@@ -189,6 +191,14 @@ final class Config {
 			$facets = (array) apply_filters( 'loupe_search_block_facet_fields', $facets, $filterable );
 			// Loupe Search rejects facets on fields that are not filterable.
 			$facets = array_values( array_intersect( self::names( $facets ), $filterable ) );
+		}
+		if ( null !== $custom_fields ) {
+			$facets = array_values(
+				array_filter(
+					$facets,
+					static fn( string $field ): bool => self::KIND_CUSTOM !== self::facet_kind( $field ) || in_array( $field, $custom_fields, true )
+				)
+			);
 		}
 
 		return [
@@ -315,15 +325,55 @@ final class Config {
 	}
 
 	/**
-	 * Data the editor uses for its notes.
+	 * Custom fields the block can offer as facets, with the post types that allow each.
 	 *
-	 * @return array{active:bool,profiles:array<string,array{facets:array<int,string>,sorts:array<int,string>,date:bool}>}
+	 * @param array<string,array{label:string,filterable:array<int,string>,sortable:array<int,string>}> $types
+	 * @return array<string,array<int,string>> Field => post type labels.
+	 */
+	public static function custom_field_options( array $types ): array {
+		$options = [];
+		foreach ( $types as $post_type => $settings ) {
+			foreach ( self::profile( [ $settings ], [ self::KIND_CUSTOM ] )[ 'facets' ] as $field ) {
+				$options[ $field ][] = (string) ( $settings[ 'label' ] ?? $post_type );
+			}
+		}
+		return $options;
+	}
+
+	/**
+	 * Data the editor uses for its settings and notes.
+	 *
+	 * @return array{active:bool,profiles:array<string,array{facets:array<int,string>,sorts:array<int,string>,date:bool}>,customFields:array<int,array{field:string,label:string,postTypes:array<int,string>}>}
 	 */
 	public static function editor_data(): array {
+		$types   = self::post_types();
+		$options = self::custom_field_options( $types );
+		$fields  = array_map( 'strval', array_keys( $options ) );
+		$labels  = self::facet_labels( $fields );
+		$custom  = [];
+		foreach ( $fields as $field ) {
+			$custom[] = [
+				'field'     => $field,
+				'label'     => $labels[ $field ] ?? self::humanize( $field ),
+				'postTypes' => $options[ $field ],
+			];
+		}
+
 		return [
-			'active'   => self::loupe_available(),
-			'profiles' => self::profiles( self::post_types() ),
+			'active'       => self::loupe_available(),
+			'profiles'     => self::profiles( $types ),
+			'customFields' => $custom,
 		];
+	}
+
+	/**
+	 * Custom field selection from the block attribute, or null to offer every field.
+	 *
+	 * @param mixed $value Saved `customFields` attribute.
+	 * @return array<int,string>|null
+	 */
+	public static function custom_field_selection( $value ): ?array {
+		return is_array( $value ) ? array_values( array_filter( $value, 'is_string' ) ) : null;
 	}
 
 	/**

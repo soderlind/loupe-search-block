@@ -4,6 +4,9 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
+	BaseControl,
+	Button,
+	CheckboxControl,
 	Notice,
 	PanelBody,
 	RangeControl,
@@ -15,9 +18,14 @@ import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
 import metadata from './block.json';
+import { toggleCustomField } from './lib';
 import './style.scss';
 
-const config = window.loupeSearchBlock || { active: false, profiles: {} };
+const config = window.loupeSearchBlock || {
+	active: false,
+	profiles: {},
+	customFields: [],
+};
 const profiles = Object.values( config.profiles || {} );
 const allSorts = config.profiles?.all?.sorts || [ 'relevance' ];
 const titleSortable = allSorts.includes( 'title_asc' );
@@ -34,7 +42,8 @@ const anyFacetOf = ( kind ) =>
 	profiles.some( ( p ) => p.facets.some( ( f ) => facetKind( f ) === kind ) );
 const anyTaxonomy = anyFacetOf( 'taxonomy' );
 const anyAuthor = anyFacetOf( 'author' );
-const anyCustom = anyFacetOf( 'custom' );
+const customOptions = config.customFields || [];
+const customEligible = customOptions.map( ( o ) => o.field );
 const anyDate = profiles.some( ( p ) => p.date );
 
 const SORT_LABELS = {
@@ -54,6 +63,7 @@ function Edit( { attributes, setAttributes } ) {
 		showFacets,
 		showAuthorFilter,
 		showCustomFields,
+		customFields,
 		showDateFilter,
 		showSort,
 		defaultSort,
@@ -162,7 +172,57 @@ function Edit( { attributes, setAttributes } ) {
 							setAttributes( { showCustomFields: value } )
 						}
 					/>
-					{ showCustomFields && ! anyCustom && (
+					{ showCustomFields && customOptions.length > 0 && (
+						<BaseControl
+							__nextHasNoMarginBottom
+							help={ __(
+								'Only fields marked Filterable in Loupe Search are listed.',
+								'loupe-search-block'
+							) }
+						>
+							<BaseControl.VisualLabel>
+								{ __( 'Custom fields', 'loupe-search-block' ) }
+							</BaseControl.VisualLabel>
+							{ customOptions.map( ( option ) => (
+								<CheckboxControl
+									__nextHasNoMarginBottom
+									key={ option.field }
+									label={ option.label }
+									help={ option.postTypes.join( ', ' ) }
+									checked={
+										! Array.isArray( customFields ) ||
+										customFields.includes( option.field )
+									}
+									onChange={ ( checked ) =>
+										setAttributes( {
+											customFields: toggleCustomField(
+												customFields,
+												customEligible,
+												option.field,
+												checked
+											),
+										} )
+									}
+								/>
+							) ) }
+							{ Array.isArray( customFields ) && (
+								<Button
+									variant="link"
+									onClick={ () =>
+										setAttributes( {
+											customFields: undefined,
+										} )
+									}
+								>
+									{ __(
+										'Reset to all fields',
+										'loupe-search-block'
+									) }
+								</Button>
+							) }
+						</BaseControl>
+					) }
+					{ showCustomFields && ! customOptions.length && (
 						<Notice status="info" isDismissible={ false }>
 							{ __(
 								'Custom field facets appear once a custom field is marked Filterable in Settings → Loupe Search → Fields.',
