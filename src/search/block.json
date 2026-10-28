@@ -24,6 +24,7 @@
 		"showFacets": { "type": "boolean", "default": true },
 		"showAuthorFilter": { "type": "boolean", "default": true },
 		"showCustomFields": { "type": "boolean", "default": true },
+		"customFields": { "type": "array", "items": { "type": "string" } },
 		"showDateFilter": { "type": "boolean", "default": false },
 		"showSort": { "type": "boolean", "default": true },
 		"defaultSort": {

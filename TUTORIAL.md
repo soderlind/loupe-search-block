@@ -103,12 +103,12 @@ Use this when your content already stores useful metadata, such as a reading lev
 2. Give some posts the value `Beginner` and others `Advanced`. Use the same key and consistent text values across the posts.
 3. Return to **Settings → Loupe Search → Fields** and find `reading_level` under Posts. If it is not listed, confirm that you have saved it on posts of that type, then reload the settings page.
 4. Enable **Indexable** and **Filterable**, save, and reindex.
-5. In the block settings, leave **Show custom field facets** on, then update the page.
+5. In the block settings, leave **Show custom field facets** on. Under **Custom fields**, tick **Reading Level** (all eligible fields are ticked until you change the list), then update the page.
 6. Search for a word shared by those posts and select **Beginner** under **Reading Level**.
 
 **Expected result:** Only matching beginner posts remain. The block turns `reading_level` into the heading **Reading Level** automatically.
 
-Prefer fields with a small set of repeated, plain-text values. Unique IDs, long text, serialized objects, and geographic data are not useful checkbox lists. The block offers eligible custom fields automatically; it does not create fields or populate their values.
+Prefer fields with a small set of repeated, plain-text values. Unique IDs, long text, serialized objects, and geographic data are not useful checkbox lists. Each block offers every eligible custom field until you untick some under **Custom fields**, so two blocks on the same page can show different fields. Fields that later stop being filterable are skipped automatically. The block does not create fields or populate their values.
 
 ### Published date range
 

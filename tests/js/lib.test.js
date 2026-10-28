@@ -10,6 +10,7 @@ import {
 	selectedValues,
 	sanitizeHighlight,
 	toResult,
+	toggleCustomField,
 } from '../../src/search/lib';
 
 const profiles = {
@@ -389,5 +390,30 @@ describe( 'helpers', () => {
 	it( 'formats positional and sequential placeholders', () => {
 		expect( format( 'Page %1$d of %2$d', 2, 5 ) ).toBe( 'Page 2 of 5' );
 		expect( format( '%d results', 3 ) ).toBe( '3 results' );
+	} );
+} );
+
+describe( 'toggleCustomField', () => {
+	const eligible = [ 'color', 'size' ];
+
+	it( 'starts from every eligible field when nothing is saved', () => {
+		expect(
+			toggleCustomField( undefined, eligible, 'color', false )
+		).toEqual( [ 'size' ] );
+	} );
+
+	it( 'adds and removes fields from a saved selection', () => {
+		expect( toggleCustomField( [], eligible, 'size', true ) ).toEqual( [
+			'size',
+		] );
+		expect(
+			toggleCustomField( [ 'size' ], eligible, 'size', false )
+		).toEqual( [] );
+	} );
+
+	it( 'keeps saved fields that are no longer eligible', () => {
+		expect(
+			toggleCustomField( [ 'old', 'color' ], eligible, 'size', true )
+		).toEqual( [ 'old', 'color', 'size' ] );
 	} );
 } );

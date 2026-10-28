@@ -57,6 +57,7 @@ Select the block and open its settings sidebar. Settings apply to that block, so
 | Show taxonomy facets | On | Checkbox filters for categories, tags, and custom taxonomies |
 | Show author filter | On | Checkbox filter showing author names |
 | Show custom field facets | On | Checkbox filters for other eligible filterable fields |
+| Custom fields | All | Tick the custom fields this block shows as facets. Only fields Loupe Search reports as Filterable are listed. **Reset to all fields** brings back the default, which also includes fields made filterable later |
 | Show date filter | Off | Published **From** and **To** date inputs |
 | Show sort options | On | Offers the sort orders allowed by your field settings |
 | Default sort | Relevance | Initial result order; falls back to Relevance if unavailable |

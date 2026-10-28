@@ -358,3 +358,22 @@ export function format( str, ...args ) {
 		return String( args[ idx ] );
 	} );
 }
+
+/**
+ * Toggle one custom field in the block's `customFields` selection.
+ *
+ * An undefined selection means every eligible field is shown, so the first
+ * change turns it into an explicit list. Saved fields that are no longer
+ * eligible are kept, so they come back if the field is made filterable again.
+ *
+ * @param {string[]|undefined} selection Saved selection.
+ * @param {string[]}           eligible  Fields the block can offer now.
+ * @param {string}             field     Field to toggle.
+ * @param {boolean}            checked   Whether the field should be shown.
+ * @return {string[]} New selection.
+ */
+export function toggleCustomField( selection, eligible, field, checked ) {
+	const current = Array.isArray( selection ) ? selection : eligible;
+	const rest = current.filter( ( f ) => f !== field );
+	return checked ? [ ...rest, field ] : rest;
+}
