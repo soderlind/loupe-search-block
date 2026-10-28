@@ -1,0 +1,168 @@
+{
+    "translation-revision-date": "2026-10-28 23:10+0100",
+    "generator": "WP-CLI\/2.12.0",
+    "source": "build\/search\/index.js",
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "messages",
+                "lang": "nb_NO",
+                "plural-forms": "nplurals=2; plural=(n != 1);"
+            },
+            "The Loupe Search block needs the Loupe Search plugin to be active.": [
+                "Loupe Search-blokken krever at utvidelsen Loupe Search er aktiv."
+            ],
+            "Relevance": [
+                "Relevans"
+            ],
+            "Newest first": [
+                "Nyeste f\u00f8rst"
+            ],
+            "Oldest first": [
+                "Eldste f\u00f8rst"
+            ],
+            "Title A\u2013Z": [
+                "Tittel A\u2013Z"
+            ],
+            "Title Z\u2013A": [
+                "Tittel Z\u2013A"
+            ],
+            "Search": [
+                "S\u00f8k"
+            ],
+            "Search\u2026": [
+                "S\u00f8k\u2026"
+            ],
+            "Type": [
+                "Type"
+            ],
+            "All types": [
+                "Alle typer"
+            ],
+            "Sort by": [
+                "Sorter etter"
+            ],
+            "Published": [
+                "Publisert"
+            ],
+            "From": [
+                "Fra"
+            ],
+            "To": [
+                "Til"
+            ],
+            "Needs %s marked Filterable in Settings \u2192 Loupe Search \u2192 Fields.": [
+                "Krever at %s er merket som filtrerbart under Innstillinger \u2192 Loupe Search \u2192 Felt."
+            ],
+            "Title sorting appears only for post types whose Title is Sortable.": [
+                "Tittelsortering vises bare for innholdstyper der Tittel er merket som sorterbart."
+            ],
+            "Title sorting needs Title marked Sortable in Settings \u2192 Loupe Search \u2192 Fields.": [
+                "Tittelsortering krever at Tittel er merket som sorterbart under Innstillinger \u2192 Loupe Search \u2192 Felt."
+            ],
+            "Search block preview": [
+                "Forh\u00e5ndsvisning av s\u00f8keblokken"
+            ],
+            "Content type": [
+                "Innholdstype"
+            ],
+            "Sort order": [
+                "Sorteringsrekkef\u00f8lge"
+            ],
+            "Published from": [
+                "Publisert fra"
+            ],
+            "Published to": [
+                "Publisert til"
+            ],
+            "Options appear after searching.": [
+                "Valgene vises etter et s\u00f8k."
+            ],
+            "Preview only. Search and filter values are not interactive in the editor.": [
+                "Kun forh\u00e5ndsvisning. S\u00f8k og filterverdier er ikke interaktive i redigeringsverkt\u00f8yet."
+            ],
+            "Label": [
+                "Etikett"
+            ],
+            "Placeholder": [
+                "Plassholder"
+            ],
+            "Results per page": [
+                "Treff per side"
+            ],
+            "Filters": [
+                "Filtre"
+            ],
+            "Post type filter": [
+                "Filter for innholdstype"
+            ],
+            "Hidden when only one content type is indexed.": [
+                "Skjult n\u00e5r bare \u00e9n innholdstype er indeksert."
+            ],
+            "Taxonomy facets": [
+                "Taksonomifasetter"
+            ],
+            "a taxonomy": [
+                "en taksonomi"
+            ],
+            "Categories, tags and custom taxonomies.": [
+                "Kategorier, stikkord og egendefinerte taksonomier."
+            ],
+            "Author filter": [
+                "Forfatterfilter"
+            ],
+            "Post Author": [
+                "Innleggsforfatter"
+            ],
+            "Filter by post author.": [
+                "Filtrer etter innleggsforfatter."
+            ],
+            "Custom field facets": [
+                "Fasetter for egendefinerte felt"
+            ],
+            "a custom field": [
+                "et egendefinert felt"
+            ],
+            "Choose the fields below.": [
+                "Velg feltene nedenfor."
+            ],
+            "Custom fields": [
+                "Egendefinerte felt"
+            ],
+            "Reset to all fields": [
+                "Tilbakestill til alle felt"
+            ],
+            "Date filter": [
+                "Datofilter"
+            ],
+            "Post Date": [
+                "Publiseringsdato"
+            ],
+            "From and To dates for the publish date.": [
+                "Fra- og til-dato for publiseringsdatoen."
+            ],
+            "Sorting": [
+                "Sortering"
+            ],
+            "Sort options": [
+                "Sorteringsvalg"
+            ],
+            "Let visitors change the order of results.": [
+                "La bes\u00f8kende endre rekkef\u00f8lgen p\u00e5 treffene."
+            ],
+            "Default sort": [
+                "Standard sortering"
+            ],
+            "Results": [
+                "Treff"
+            ],
+            "Show excerpt": [
+                "Vis utdrag"
+            ],
+            "Highlight matches": [
+                "Uthev treff"
+            ]
+        }
+    }
+}

@@ -1,6 +1,6 @@
 {
 	"name": "loupe-search-block",
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"description": "Search block for Loupe Search: live search-as-you-type, post-type filter, category/tag facets and sorting.",
 	"private": true,
 	"license": "GPL-2.0-or-later",
@@ -9,7 +9,8 @@
 		"start": "wp-scripts start --experimental-modules",
 		"lint:js": "wp-scripts lint-js src",
 		"test": "wp-scripts test-unit-js",
-		"i18n:make-pot": "wp i18n make-pot . languages/loupe-search-block.pot --exclude=node_modules,src,tests,vendor --domain=loupe-search-block"
+		"i18n:make-pot": "wp i18n make-pot . languages/loupe-search-block.pot --exclude=node_modules,src,tests,vendor --domain=loupe-search-block",
+		"i18n:build": "wp i18n make-mo languages && wp i18n make-php languages && wp i18n make-json languages --no-purge --pretty-print"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^34.0.0"

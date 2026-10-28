@@ -5,7 +5,7 @@ Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
 Requires Plugins: loupe-search
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPL-2.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -51,6 +51,9 @@ Title sorting needs `post_title` to be *Sortable* in Settings → Loupe Search �
 Yes, if Search insights is enabled in Loupe Search. Only the query a visitor settles on, or submits with Enter, is counted.
 
 == Changelog ==
+
+= 1.1.3 =
+* Norwegian Bokmål translations for the editor and front end.
 
 = 1.1.2 =
 * Calmer block settings: separate Filters and Sorting panels, with setup hints as help text.
