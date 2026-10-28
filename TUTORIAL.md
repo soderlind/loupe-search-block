@@ -65,6 +65,8 @@ A field used for filtering or sorting must also be **Indexable**. A block switch
 
 **Checkpoint:** Results appear inside the block as you type. Open a result to check that it leads to the right content. Test the live behavior on the front end, not just in the editor preview.
 
+The editor preview shows the search form and controls enabled for this block. It is not interactive; facet values are loaded after a search.
+
 ## 4. Enable the filters you need
 
 Checkbox filters are called **facets**. They show values found in the matching results, with counts beside them.

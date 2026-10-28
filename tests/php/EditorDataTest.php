@@ -31,6 +31,8 @@ final class EditorDataTest extends TestCase {
 				],
 				$data[ 'customFields' ]
 			);
+			$this->assertSame( [ [ 'slug' => 'post', 'label' => 'Posts' ] ], $data[ 'postTypes' ] );
+			$this->assertSame( [ '123' => '123', 'color' => 'Color' ], $data[ 'facetLabels' ] );
 			$selection = Config::custom_field_selection( [ $data[ 'customFields' ][ 0 ][ 'field' ] ] );
 			$this->assertSame( [ '123' ], $selection );
 			$this->assertSame( [ '123' ], Config::profiles( $types, Config::FACET_KINDS, $selection )[ 'post' ][ 'facets' ] );

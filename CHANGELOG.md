@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Editor canvas preview shows the search controls enabled for each block. Facet values remain dynamic and load after searching.
+
 ### Changed
 - Calmer block settings: separate *Filters* and *Sorting* panels, shorter switch labels, and setup hints shown as help text instead of info boxes. Custom field checkboxes are indented under their switch. No attribute changes; existing blocks are unaffected.
 

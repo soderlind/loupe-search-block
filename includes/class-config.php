@@ -341,16 +341,29 @@ final class Config {
 	}
 
 	/**
-	 * Data the editor uses for its settings and notes.
+	 * Data the editor uses for its settings, preview and notes.
 	 *
-	 * @return array{active:bool,profiles:array<string,array{facets:array<int,string>,sorts:array<int,string>,date:bool}>,customFields:array<int,array{field:string,label:string,postTypes:array<int,string>}>}
+	 * @return array{
+	 *     active:bool,
+	 *     profiles:array<string,array{facets:array<int,string>,sorts:array<int,string>,date:bool}>,
+	 *     postTypes:array<int,array{slug:string,label:string}>,
+	 *     facetLabels:array<string,string>,
+	 *     customFields:array<int,array{field:string,label:string,postTypes:array<int,string>}>
+	 * }
 	 */
 	public static function editor_data(): array {
-		$types   = self::post_types();
-		$options = self::custom_field_options( $types );
-		$fields  = array_map( 'strval', array_keys( $options ) );
-		$labels  = self::facet_labels( $fields );
-		$custom  = [];
+		$types          = self::post_types();
+		$options        = self::custom_field_options( $types );
+		$fields         = array_map( 'strval', array_keys( $options ) );
+		$labels         = self::facet_labels( $fields );
+		$profiles       = self::profiles( $types );
+		$profile_facets = [];
+		foreach ( $profiles as $profile ) {
+			$profile_facets = array_merge( $profile_facets, $profile[ 'facets' ] );
+		}
+		$profile_facets = array_values( array_unique( $profile_facets ) );
+		$facet_labels   = self::facet_labels( $profile_facets );
+		$custom         = [];
 		foreach ( $fields as $field ) {
 			$custom[] = [
 				'field'     => $field,
@@ -361,7 +374,16 @@ final class Config {
 
 		return [
 			'active'       => self::loupe_available(),
-			'profiles'     => self::profiles( $types ),
+			'profiles'     => $profiles,
+			'postTypes'    => array_map(
+				static fn( $slug, array $settings ): array => [
+					'slug'  => (string) $slug,
+					'label' => (string) ( $settings[ 'label' ] ?? $slug ),
+				],
+				array_keys( $types ),
+				array_values( $types )
+			),
+			'facetLabels'  => $facet_labels,
 			'customFields' => $custom,
 		];
 	}

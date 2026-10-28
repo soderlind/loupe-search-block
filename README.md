@@ -48,6 +48,8 @@ Loupe Search builds the search index; this add-on provides the search block.
 
 Select the block and open its settings sidebar. Settings are grouped in the **Search**, **Filters**, **Sorting**, and **Results** panels and apply to that block, so different pages can have different search experiences. When a filter needs a field setting in Loupe Search, the switch's help text says which one.
 
+The editor canvas previews the search form and controls enabled for that block. The preview is not interactive; facet values appear after a visitor searches.
+
 | Setting | Default | What it does |
 | --- | --- | --- |
 | Label | Search | Text above the search input |

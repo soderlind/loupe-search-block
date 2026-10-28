@@ -1,5 +1,6 @@
 import {
 	buildFacetGroups,
+	buildEditorPreview,
 	buildPayload,
 	dateRangeItems,
 	decodeEntities,
@@ -52,6 +53,93 @@ describe( 'profileFor', () => {
 			facets: [],
 			sorts: [ 'relevance' ],
 			date: false,
+		} );
+	} );
+} );
+
+describe( 'buildEditorPreview', () => {
+	it( 'shows controls and facets enabled by the block settings', () => {
+		expect(
+			buildEditorPreview(
+				{
+					showTypeFilter: true,
+					showFacets: true,
+					showAuthorFilter: true,
+					showCustomFields: true,
+					customFields: [ 'price' ],
+					showDateFilter: true,
+					showSort: true,
+					defaultSort: 'newest',
+				},
+				{
+					profiles: {
+						all: {
+							facets: [
+								'taxonomy_category',
+								'post_author',
+								'price',
+								'color',
+							],
+							sorts: [ 'relevance', 'newest' ],
+							date: true,
+						},
+					},
+					postTypes: [
+						{ slug: 'post', label: 'Posts' },
+						{ slug: 'page', label: 'Pages' },
+					],
+					facetLabels: {
+						taxonomy_category: 'Categories',
+						post_author: 'Authors',
+						price: 'Price',
+						color: 'Color',
+					},
+				}
+			)
+		).toEqual( {
+			postTypes: [
+				{ slug: 'post', label: 'Posts' },
+				{ slug: 'page', label: 'Pages' },
+			],
+			sorts: [ 'relevance', 'newest' ],
+			defaultSort: 'newest',
+			showDate: true,
+			facets: [
+				{ field: 'taxonomy_category', label: 'Categories' },
+				{ field: 'post_author', label: 'Authors' },
+				{ field: 'price', label: 'Price' },
+			],
+		} );
+	} );
+
+	it( 'omits disabled controls and fields outside the selected profile', () => {
+		expect(
+			buildEditorPreview(
+				{
+					showTypeFilter: false,
+					showFacets: false,
+					showAuthorFilter: true,
+					showCustomFields: false,
+					showDateFilter: false,
+					showSort: false,
+				},
+				{
+					profiles: {
+						all: {
+							facets: [ 'taxonomy_category', 'post_author', 'price' ],
+							sorts: [ 'relevance', 'newest' ],
+							date: true,
+						},
+					},
+					postTypes: [ { slug: 'post', label: 'Posts' } ],
+				}
+			)
+		).toEqual( {
+			postTypes: [],
+			sorts: [],
+			defaultSort: 'relevance',
+			showDate: false,
+			facets: [ { field: 'post_author', label: 'post_author' } ],
 		} );
 	} );
 } );

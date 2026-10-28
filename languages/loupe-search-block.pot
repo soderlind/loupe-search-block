@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-28T19:54:47+00:00\n"
+"POT-Creation-Date: 2026-10-28T20:09:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: loupe-search-block\n"
@@ -112,26 +112,32 @@ msgid "(no title)"
 msgstr ""
 
 #: build/search/render.php:153
+#: build/search/index.js:2
 msgid "Type"
 msgstr ""
 
 #: build/search/render.php:155
+#: build/search/index.js:2
 msgid "All types"
 msgstr ""
 
 #: build/search/render.php:164
+#: build/search/index.js:2
 msgid "Sort by"
 msgstr ""
 
 #: build/search/render.php:192
+#: build/search/index.js:2
 msgid "Published"
 msgstr ""
 
 #: build/search/render.php:194
+#: build/search/index.js:2
 msgid "From"
 msgstr ""
 
 #: build/search/render.php:198
+#: build/search/index.js:2
 msgid "To"
 msgstr ""
 
@@ -163,6 +169,34 @@ msgstr ""
 
 #: build/search/index.js:2
 msgid "Title sorting needs Title marked Sortable in Settings → Loupe Search → Fields."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Search block preview"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Content type"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Sort order"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Published from"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Published to"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Options appear after searching."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Preview only. Search and filter values are not interactive in the editor."
 msgstr ""
 
 #: build/search/index.js:2

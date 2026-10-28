@@ -377,3 +377,51 @@ export function toggleCustomField( selection, eligible, field, checked ) {
 	const rest = current.filter( ( f ) => f !== field );
 	return checked ? [ ...rest, field ] : rest;
 }
+
+/**
+ * Resolve the controls to show in the non-interactive editor preview.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Object} config     Editor configuration from PHP.
+ * @return {Object} Preview controls derived from the block settings.
+ */
+export function buildEditorPreview( attributes, config ) {
+	const profiles = config.profiles || {};
+	const postTypes = config.postTypes || [];
+	const allSorts = profiles.all?.sorts || [ 'relevance' ];
+	const customFields = attributes.customFields;
+	const facets = ( profiles.all?.facets || [] ).filter( ( field ) => {
+		if ( field.startsWith( 'taxonomy_' ) ) {
+			return attributes.showFacets;
+		}
+		if ( field === 'post_author' ) {
+			return attributes.showAuthorFilter;
+		}
+		return (
+			attributes.showCustomFields &&
+			( ! Array.isArray( customFields ) ||
+				customFields.includes( field ) )
+		);
+	} );
+
+	return {
+		postTypes:
+			attributes.showTypeFilter && postTypes.length > 1 ? postTypes : [],
+		sorts: attributes.showSort && allSorts.length > 1 ? allSorts : [],
+		defaultSort: allSorts.includes( attributes.defaultSort )
+			? attributes.defaultSort
+			: 'relevance',
+		showDate:
+			attributes.showDateFilter &&
+			Object.values( profiles ).some( ( profile ) => profile.date ),
+		facets: facets.map( ( field ) => ( {
+			field,
+			label:
+				config.facetLabels?.[ field ] ||
+				config.customFields?.find(
+					( option ) => option.field === field
+				)?.label ||
+				field,
+		} ) ),
+	};
+}

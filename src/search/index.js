@@ -14,15 +14,16 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
-import ServerSideRender from '@wordpress/server-side-render';
 
 import metadata from './block.json';
-import { toggleCustomField } from './lib';
+import { buildEditorPreview, toggleCustomField } from './lib';
 import './style.scss';
 
 const config = window.loupeSearchBlock || {
 	active: false,
 	profiles: {},
+	postTypes: [],
+	facetLabels: {},
 	customFields: [],
 };
 const profiles = Object.values( config.profiles || {} );
@@ -82,6 +83,176 @@ const SORT_LABELS = {
 	title_desc: __( 'Title Z–A', 'loupe-search-block' ),
 };
 
+function EditorPreview( { attributes } ) {
+	const preview = buildEditorPreview( attributes, config );
+	const sortOptions = preview.sorts.map( ( sort ) => ( {
+		value: sort,
+		label: SORT_LABELS[ sort ] || sort,
+	} ) );
+
+	return (
+		<div
+			className="loupe-search-block__editor-preview"
+			role="group"
+			aria-label={ __( 'Search block preview', 'loupe-search-block' ) }
+		>
+			<form
+				className="loupe-search-block__form"
+				onSubmit={ ( event ) => event.preventDefault() }
+			>
+				<p className="loupe-search-block__label">
+					{ attributes.label?.trim() ||
+						__( 'Search', 'loupe-search-block' ) }
+				</p>
+				<div className="loupe-search-block__field">
+					<input
+						className="loupe-search-block__input"
+						type="search"
+						placeholder={
+							attributes.placeholder?.trim() ||
+							__( 'Search…', 'loupe-search-block' )
+						}
+						readOnly
+						tabIndex={ -1 }
+						aria-label={
+							attributes.label?.trim() ||
+							__( 'Search', 'loupe-search-block' )
+						}
+					/>
+					<button
+						className="wp-element-button"
+						type="button"
+						disabled
+					>
+						{ __( 'Search', 'loupe-search-block' ) }
+					</button>
+				</div>
+				{ ( preview.postTypes.length > 0 ||
+					preview.sorts.length > 0 ||
+					preview.showDate ) && (
+					<div className="loupe-search-block__controls">
+						{ preview.postTypes.length > 0 && (
+							<div className="loupe-search-block__control">
+								<span>
+									{ __( 'Type', 'loupe-search-block' ) }
+								</span>
+								<select
+									aria-label={ __(
+										'Content type',
+										'loupe-search-block'
+									) }
+									disabled
+									tabIndex={ -1 }
+									value="all"
+								>
+									<option value="all">
+										{ __(
+											'All types',
+											'loupe-search-block'
+										) }
+									</option>
+									{ preview.postTypes.map( ( type ) => (
+										<option
+											key={ type.slug }
+											value={ type.slug }
+										>
+											{ type.label }
+										</option>
+									) ) }
+								</select>
+							</div>
+						) }
+						{ preview.sorts.length > 0 && (
+							<div className="loupe-search-block__control">
+								<span>
+									{ __( 'Sort by', 'loupe-search-block' ) }
+								</span>
+								<select
+									aria-label={ __(
+										'Sort order',
+										'loupe-search-block'
+									) }
+									disabled
+									tabIndex={ -1 }
+									value={ preview.defaultSort }
+								>
+									{ sortOptions.map( ( option ) => (
+										<option
+											key={ option.value }
+											value={ option.value }
+										>
+											{ option.label }
+										</option>
+									) ) }
+								</select>
+							</div>
+						) }
+						{ preview.showDate && (
+							<fieldset className="loupe-search-block__control loupe-search-block__dates">
+								<legend>
+									{ __( 'Published', 'loupe-search-block' ) }
+								</legend>
+								<div>
+									<span>
+										{ __( 'From', 'loupe-search-block' ) }
+									</span>
+									<input
+										aria-label={ __(
+											'Published from',
+											'loupe-search-block'
+										) }
+										type="date"
+										disabled
+										tabIndex={ -1 }
+									/>
+								</div>
+								<div>
+									<span>
+										{ __( 'To', 'loupe-search-block' ) }
+									</span>
+									<input
+										aria-label={ __(
+											'Published to',
+											'loupe-search-block'
+										) }
+										type="date"
+										disabled
+										tabIndex={ -1 }
+									/>
+								</div>
+							</fieldset>
+						) }
+					</div>
+				) }
+				{ preview.facets.length > 0 ? (
+					<div className="loupe-search-block__facets">
+						{ preview.facets.map( ( facet ) => (
+							<fieldset
+								className="loupe-search-block__facet"
+								key={ facet.field }
+							>
+								<legend>{ facet.label }</legend>
+								<p className="loupe-search-block__editor-note">
+									{ __(
+										'Options appear after searching.',
+										'loupe-search-block'
+									) }
+								</p>
+							</fieldset>
+						) ) }
+					</div>
+				) : null }
+				<p className="loupe-search-block__editor-note">
+					{ __(
+						'Preview only. Search and filter values are not interactive in the editor.',
+						'loupe-search-block'
+					) }
+				</p>
+			</form>
+		</div>
+	);
+}
+
 function Edit( { attributes, setAttributes } ) {
 	const {
 		label,
@@ -105,7 +276,7 @@ function Edit( { attributes, setAttributes } ) {
 	} ) );
 
 	return (
-		<div { ...useBlockProps() }>
+		<div { ...useBlockProps( { className: 'loupe-search-block' } ) }>
 			<InspectorControls>
 				<PanelBody title={ __( 'Search', 'loupe-search-block' ) }>
 					<TextControl
@@ -326,10 +497,7 @@ function Edit( { attributes, setAttributes } ) {
 					) }
 				</Notice>
 			) : (
-				<ServerSideRender
-					block={ metadata.name }
-					attributes={ attributes }
-				/>
+				<EditorPreview attributes={ attributes } />
 			) }
 		</div>
 	);
