@@ -36,8 +36,27 @@
 		gap: 0.5rem;
 		font-size: 0.9em;
 
-		select {
+		select,
+		input {
 			font: inherit;
+		}
+	}
+
+	&__dates {
+		flex-wrap: wrap;
+		margin: 0;
+		padding: 0;
+		border: 0;
+
+		legend {
+			float: left;
+			padding: 0;
+		}
+
+		label {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
 		}
 	}
 

@@ -24,7 +24,18 @@ const titleSortable = allSorts.includes( 'title_asc' );
 const anyTitleSortable = profiles.some( ( p ) =>
 	p.sorts.includes( 'title_asc' )
 );
-const anyFacets = profiles.some( ( p ) => p.facets.length > 0 );
+const facetKind = ( field ) => {
+	if ( field === 'post_author' ) {
+		return 'author';
+	}
+	return field.startsWith( 'taxonomy_' ) ? 'taxonomy' : 'custom';
+};
+const anyFacetOf = ( kind ) =>
+	profiles.some( ( p ) => p.facets.some( ( f ) => facetKind( f ) === kind ) );
+const anyTaxonomy = anyFacetOf( 'taxonomy' );
+const anyAuthor = anyFacetOf( 'author' );
+const anyCustom = anyFacetOf( 'custom' );
+const anyDate = profiles.some( ( p ) => p.date );
 
 const SORT_LABELS = {
 	relevance: __( 'Relevance', 'loupe-search-block' ),
@@ -41,6 +52,9 @@ function Edit( { attributes, setAttributes } ) {
 		perPage,
 		showTypeFilter,
 		showFacets,
+		showAuthorFilter,
+		showCustomFields,
+		showDateFilter,
 		showSort,
 		defaultSort,
 		showExcerpt,
@@ -100,7 +114,11 @@ function Edit( { attributes, setAttributes } ) {
 					/>
 					<ToggleControl
 						label={ __(
-							'Show category and tag facets',
+							'Show taxonomy facets',
+							'loupe-search-block'
+						) }
+						help={ __(
+							'Categories, tags and custom taxonomies.',
 							'loupe-search-block'
 						) }
 						checked={ showFacets }
@@ -108,10 +126,65 @@ function Edit( { attributes, setAttributes } ) {
 							setAttributes( { showFacets: value } )
 						}
 					/>
-					{ showFacets && ! anyFacets && (
+					{ showFacets && ! anyTaxonomy && (
 						<Notice status="info" isDismissible={ false }>
 							{ __(
-								'Facets appear for Categories and Tags once they are marked Filterable in Settings → Loupe Search → Fields.',
+								'Taxonomy facets appear once a taxonomy, such as Categories or Tags, is marked Filterable in Settings → Loupe Search → Fields.',
+								'loupe-search-block'
+							) }
+						</Notice>
+					) }
+					<ToggleControl
+						label={ __(
+							'Show author filter',
+							'loupe-search-block'
+						) }
+						checked={ showAuthorFilter }
+						onChange={ ( value ) =>
+							setAttributes( { showAuthorFilter: value } )
+						}
+					/>
+					{ showAuthorFilter && ! anyAuthor && (
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'The author filter appears once Post Author is marked Filterable in Settings → Loupe Search → Fields.',
+								'loupe-search-block'
+							) }
+						</Notice>
+					) }
+					<ToggleControl
+						label={ __(
+							'Show custom field facets',
+							'loupe-search-block'
+						) }
+						checked={ showCustomFields }
+						onChange={ ( value ) =>
+							setAttributes( { showCustomFields: value } )
+						}
+					/>
+					{ showCustomFields && ! anyCustom && (
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'Custom field facets appear once a custom field is marked Filterable in Settings → Loupe Search → Fields.',
+								'loupe-search-block'
+							) }
+						</Notice>
+					) }
+					<ToggleControl
+						label={ __( 'Show date filter', 'loupe-search-block' ) }
+						help={ __(
+							'From and To dates for the publish date.',
+							'loupe-search-block'
+						) }
+						checked={ showDateFilter }
+						onChange={ ( value ) =>
+							setAttributes( { showDateFilter: value } )
+						}
+					/>
+					{ showDateFilter && ! anyDate && (
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'The date filter appears once Post Date is marked Filterable in Settings → Loupe Search → Fields.',
 								'loupe-search-block'
 							) }
 						</Notice>

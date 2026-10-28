@@ -27,8 +27,18 @@ if ( ! Config::loupe_available() ) {
 	return;
 }
 
-$loupe_types    = Config::post_types();
-$loupe_profiles = Config::profiles( $loupe_types );
+$loupe_types = Config::post_types();
+$loupe_kinds = [];
+if ( ! empty( $attributes[ 'showFacets' ] ) ) {
+	$loupe_kinds[] = Config::KIND_TAXONOMY;
+}
+if ( ! empty( $attributes[ 'showAuthorFilter' ] ) ) {
+	$loupe_kinds[] = Config::KIND_AUTHOR;
+}
+if ( ! empty( $attributes[ 'showCustomFields' ] ) ) {
+	$loupe_kinds[] = Config::KIND_CUSTOM;
+}
+$loupe_profiles = Config::profiles( $loupe_types, $loupe_kinds );
 
 $loupe_sort_labels = [
 	'relevance'  => __( 'Relevance', 'loupe-search-block' ),
@@ -38,10 +48,11 @@ $loupe_sort_labels = [
 	'title_desc' => __( 'Title Z–A', 'loupe-search-block' ),
 ];
 
-$loupe_facet_labels = [];
-foreach ( Config::FACET_FIELDS as $loupe_field ) {
-	$loupe_taxonomy                     = get_taxonomy( substr( $loupe_field, strlen( 'taxonomy_' ) ) );
-	$loupe_facet_labels[ $loupe_field ] = $loupe_taxonomy ? (string) $loupe_taxonomy->labels->name : $loupe_field;
+$loupe_facet_fields = array_values( array_unique( array_merge( ...array_values( array_column( $loupe_profiles, 'facets' ) ) ) ) );
+$loupe_facet_labels = Config::facet_labels( $loupe_facet_fields );
+$loupe_value_labels = [];
+if ( in_array( Config::AUTHOR_FIELD, $loupe_facet_fields, true ) ) {
+	$loupe_value_labels[ Config::AUTHOR_FIELD ] = (object) Config::author_names( array_keys( $loupe_types ) );
 }
 
 $loupe_default_sort = (string) ( $attributes[ 'defaultSort' ] ?? 'relevance' );
@@ -51,6 +62,7 @@ if ( ! in_array( $loupe_default_sort, $loupe_profiles[ 'all' ][ 'sorts' ], true 
 
 $loupe_show_types  = ! empty( $attributes[ 'showTypeFilter' ] ) && count( $loupe_types ) > 1;
 $loupe_show_sort   = ! empty( $attributes[ 'showSort' ] ) && count( $loupe_profiles[ 'all' ][ 'sorts' ] ) > 1;
+$loupe_show_date   = ! empty( $attributes[ 'showDateFilter' ] ) && in_array( true, array_column( $loupe_profiles, 'date' ), true );
 $loupe_label       = '' !== trim( (string) ( $attributes[ 'label' ] ?? '' ) ) ? (string) $attributes[ 'label' ] : __( 'Search', 'loupe-search-block' );
 $loupe_placeholder = '' !== trim( (string) ( $attributes[ 'placeholder' ] ?? '' ) ) ? (string) $attributes[ 'placeholder' ] : __( 'Search…', 'loupe-search-block' );
 $loupe_uid         = wp_unique_id( 'loupe-search-' );
@@ -80,12 +92,15 @@ $loupe_context = [
 	'perPage'     => max( 1, min( 100, (int) ( $attributes[ 'perPage' ] ?? 10 ) ) ),
 	'highlight'   => ! empty( $attributes[ 'highlight' ] ),
 	'showExcerpt' => ! empty( $attributes[ 'showExcerpt' ] ),
-	'showFacets'  => ! empty( $attributes[ 'showFacets' ] ),
+	'showDate'    => $loupe_show_date,
 	'profiles'    => $loupe_profiles,
-	'facetLabels' => $loupe_facet_labels,
+	'facetLabels' => (object) $loupe_facet_labels,
+	'valueLabels' => (object) $loupe_value_labels,
 	'q'           => '',
 	'postType'    => 'all',
 	'sort'        => $loupe_default_sort,
+	'dateFrom'    => '',
+	'dateTo'      => '',
 	'page'        => 1,
 	'selected'    => (object) [],
 	'results'     => [],
@@ -131,7 +146,7 @@ $loupe_wrapper = get_block_wrapper_attributes( [ 'class' => 'loupe-search-block'
 			<button type="submit" class="loupe-search-block__submit wp-element-button"><?php esc_html_e( 'Search', 'loupe-search-block' ); ?></button>
 		</div>
 
-		<?php if ( $loupe_show_types || $loupe_show_sort ) : ?>
+		<?php if ( $loupe_show_types || $loupe_show_sort || $loupe_show_date ) : ?>
 			<div class="loupe-search-block__controls" hidden data-wp-bind--hidden="!context.ready">
 				<?php if ( $loupe_show_types ) : ?>
 					<label class="loupe-search-block__control">
@@ -172,6 +187,19 @@ $loupe_wrapper = get_block_wrapper_attributes( [ 'class' => 'loupe-search-block'
 						</select>
 					</label>
 				<?php endif; ?>
+				<?php if ( $loupe_show_date ) : ?>
+					<fieldset class="loupe-search-block__control loupe-search-block__dates" data-wp-bind--hidden="!state.dateAllowed">
+						<legend><?php esc_html_e( 'Published', 'loupe-search-block' ); ?></legend>
+						<label>
+							<span><?php esc_html_e( 'From', 'loupe-search-block' ); ?></span>
+							<input type="date" data-wp-bind--value="context.dateFrom" data-wp-bind--max="context.dateTo" data-wp-on--change="actions.setDateFrom" />
+						</label>
+						<label>
+							<span><?php esc_html_e( 'To', 'loupe-search-block' ); ?></span>
+							<input type="date" data-wp-bind--value="context.dateTo" data-wp-bind--min="context.dateFrom" data-wp-on--change="actions.setDateTo" />
+						</label>
+					</fieldset>
+				<?php endif; ?>
 			</div>
 		<?php endif; ?>
 	</form>
@@ -196,7 +224,7 @@ $loupe_wrapper = get_block_wrapper_attributes( [ 'class' => 'loupe-search-block'
 								data-wp-bind--checked="state.bucketChecked"
 								data-wp-on--change="actions.toggleFacet"
 							/>
-							<span data-wp-text="context.bucket.value"></span>
+							<span data-wp-text="context.bucket.label"></span>
 							<span class="loupe-search-block__count" data-wp-text="context.bucket.count"></span>
 						</label>
 					</template>

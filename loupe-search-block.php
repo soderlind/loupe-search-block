@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name:       Loupe Search Block
  * Plugin URI:        https://github.com/soderlind/loupe-search-block
- * Description:       A search block for Loupe Search: live search-as-you-type, post-type filter, category and tag facets, and sorting.
+ * Description:       A search block for Loupe Search: live search-as-you-type, post-type filter, taxonomy, author and custom-field facets, a date filter, and sorting.
  * Version:           1.0.0
  * Author:            Per Soderlind
  * Author URI:        https://soderlind.no

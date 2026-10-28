@@ -22,6 +22,7 @@ final class ConfigTest extends TestCase {
 			[
 				'facets' => [ 'taxonomy_category', 'taxonomy_post_tag' ],
 				'sorts'  => [ 'relevance', 'newest', 'oldest', 'title_asc', 'title_desc' ],
+				'date'   => true,
 			],
 			Config::profile( [ self::POST ] )
 		);
@@ -43,18 +44,59 @@ final class ConfigTest extends TestCase {
 		$this->assertSame( [ 'relevance' ], Config::profile( [ $post ] )[ 'sorts' ] );
 	}
 
-	public function test_facets_keep_display_order_and_ignore_other_fields(): void {
+	public function test_facets_are_ordered_taxonomies_author_custom_fields(): void {
 		$type = [
 			'label'      => 'Products',
-			'filterable' => [ 'taxonomy_post_tag', 'taxonomy_product_cat', 'taxonomy_category' ],
+			'filterable' => [ 'price', 'post_title', 'taxonomy_post_tag', 'post_author', 'taxonomy_product_cat', 'post_date', 'taxonomy_category', 'color', 'permalink', 'taxonomy_' ],
 			'sortable'   => [],
 		];
 
-		$this->assertSame( [ 'taxonomy_category', 'taxonomy_post_tag' ], Config::profile( [ $type ] )[ 'facets' ] );
+		$this->assertSame(
+			[ 'taxonomy_category', 'taxonomy_post_tag', 'taxonomy_product_cat', 'post_author', 'price', 'color' ],
+			Config::profile( [ $type ] )[ 'facets' ]
+		);
+	}
+
+	public function test_facet_kinds_can_be_turned_off(): void {
+		$filterable = [ 'taxonomy_category', 'post_author', 'price' ];
+
+		$this->assertSame( [ 'post_author', 'price' ], Config::facet_fields( $filterable, [ Config::KIND_AUTHOR, Config::KIND_CUSTOM ] ) );
+		$this->assertSame( [ 'taxonomy_category' ], Config::facet_fields( $filterable, [ Config::KIND_TAXONOMY ] ) );
+		$this->assertSame( [], Config::facet_fields( $filterable, [] ) );
+	}
+
+	public function test_profiles_pass_kinds_and_intersect_custom_fields(): void {
+		$profiles = Config::profiles(
+			[
+				'post'  => [ 'label' => 'Posts', 'filterable' => [ 'post_author', 'price', 'taxonomy_category' ], 'sortable' => [] ],
+				'movie' => [ 'label' => 'Movies', 'filterable' => [ 'price' ], 'sortable' => [] ],
+			],
+			[ Config::KIND_CUSTOM, Config::KIND_AUTHOR ]
+		);
+
+		$this->assertSame( [ 'price' ], $profiles[ 'all' ][ 'facets' ] );
+		$this->assertSame( [ 'post_author', 'price' ], $profiles[ 'post' ][ 'facets' ] );
+		$this->assertFalse( $profiles[ 'movie' ][ 'date' ] );
+	}
+
+	public function test_facet_kind(): void {
+		$this->assertSame( Config::KIND_AUTHOR, Config::facet_kind( 'post_author' ) );
+		$this->assertSame( Config::KIND_TAXONOMY, Config::facet_kind( 'taxonomy_genre' ) );
+		$this->assertSame( Config::KIND_CUSTOM, Config::facet_kind( '_event_venue' ) );
+		$this->assertNull( Config::facet_kind( 'post_date' ) );
+		$this->assertNull( Config::facet_kind( 'post_content' ) );
+		$this->assertNull( Config::facet_kind( 'permalink' ) );
+		$this->assertNull( Config::facet_kind( 'taxonomy_' ) );
+	}
+
+	public function test_humanize(): void {
+		$this->assertSame( 'Event Venue', Config::humanize( '_event_venue' ) );
+		$this->assertSame( 'Release Year', Config::humanize( 'release-year' ) );
+		$this->assertSame( '__', Config::humanize( '__' ) );
 	}
 
 	public function test_no_types_means_relevance_only(): void {
-		$this->assertSame( [ 'all' => [ 'facets' => [], 'sorts' => [ 'relevance' ] ] ], Config::profiles( [] ) );
+		$this->assertSame( [ 'all' => [ 'facets' => [], 'sorts' => [ 'relevance' ], 'date' => false ] ], Config::profiles( [] ) );
 	}
 
 	public function test_names_accepts_strings_and_field_entries(): void {

@@ -6,6 +6,9 @@
 export const IDLE_COUNT_MS = 1500;
 export const DEBOUNCE_MS = 300;
 export const FACET_SIZE = 10;
+export const DATE_FIELD = 'post_date';
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const SORTS = {
 	newest: [ { by: 'post_date', order: 'desc' } ],
@@ -31,19 +34,49 @@ export function normalizeQuery( q ) {
 }
 
 /**
- * Profile (allowed facets and sorts) for the selected post type.
+ * Profile (allowed facets, sorts and date filter) for the selected post type.
  *
  * @param {Object} profiles Profiles keyed by post type and "all".
  * @param {string} postType Selected post type.
- * @return {{facets: string[], sorts: string[]}} Profile.
+ * @return {{facets: string[], sorts: string[], date: boolean}} Profile.
  */
 export function profileFor( profiles, postType ) {
 	return (
 		( profiles && ( profiles[ postType ] || profiles.all ) ) || {
 			facets: [],
 			sorts: [ 'relevance' ],
+			date: false,
 		}
 	);
+}
+
+/**
+ * Filter predicates for the date range. Dates are `YYYY-MM-DD`; the end date
+ * includes the whole day. Invalid dates are ignored.
+ *
+ * @param {string} from Start date.
+ * @param {string} to   End date.
+ * @return {Array} Predicates.
+ */
+export function dateRangeItems( from, to ) {
+	const items = [];
+	if ( DATE_PATTERN.test( from || '' ) ) {
+		items.push( {
+			type: 'pred',
+			field: DATE_FIELD,
+			op: 'gte',
+			value: from,
+		} );
+	}
+	if ( DATE_PATTERN.test( to || '' ) ) {
+		items.push( {
+			type: 'pred',
+			field: DATE_FIELD,
+			op: 'lte',
+			value: to + ' 23:59:59',
+		} );
+	}
+	return items;
 }
 
 /**
@@ -71,30 +104,31 @@ export function buildPayload( ctx, opts = {} ) {
 		payload.sort = SORTS[ ctx.sort ];
 	}
 
-	if ( ctx.showFacets && profile.facets.length ) {
-		const items = [];
-		profile.facets.forEach( ( field ) => {
-			const values = ( ctx.selected && ctx.selected[ field ] ) || [];
-			if ( values.length ) {
-				items.push( {
-					type: 'pred',
-					field,
-					op: 'in',
-					value: [ ...values ],
-				} );
-			}
-		} );
-		if ( items.length ) {
-			payload.filter = { type: 'and', items };
-		}
-		if ( ! opts.size ) {
-			payload.facets = profile.facets.map( ( field ) => ( {
-				type: 'terms',
+	const items = [];
+	profile.facets.forEach( ( field ) => {
+		const values = ( ctx.selected && ctx.selected[ field ] ) || [];
+		if ( values.length ) {
+			items.push( {
+				type: 'pred',
 				field,
-				size: FACET_SIZE,
-				minCount: 1,
-			} ) );
+				op: 'in',
+				value: [ ...values ],
+			} );
 		}
+	} );
+	if ( ctx.showDate && profile.date ) {
+		items.push( ...dateRangeItems( ctx.dateFrom, ctx.dateTo ) );
+	}
+	if ( items.length ) {
+		payload.filter = { type: 'and', items };
+	}
+	if ( profile.facets.length && ! opts.size ) {
+		payload.facets = profile.facets.map( ( field ) => ( {
+			type: 'terms',
+			field,
+			size: FACET_SIZE,
+			minCount: 1,
+		} ) );
 	}
 
 	if ( ! opts.size ) {
@@ -143,26 +177,38 @@ export function pruneSelected( selected, facets ) {
  * Turn the facet distribution into display groups. Selected values stay
  * visible even when the current results no longer contain them.
  *
- * @param {string[]} fields   Facet fields in display order.
- * @param {Object}   facets   Response facets.
- * @param {Object}   selected Field => selected values.
- * @param {Object}   labels   Field => label.
+ * @param {string[]} fields        Facet fields in display order.
+ * @param {Object}   facets        Response facets.
+ * @param {Object}   selected      Field => selected values.
+ * @param {Object}   labels        Field => group label.
+ * @param {Object}   [valueLabels] Field => value => label (e.g. author ID => name).
  * @return {Array} Groups.
  */
-export function buildFacetGroups( fields, facets, selected, labels ) {
+export function buildFacetGroups(
+	fields,
+	facets,
+	selected,
+	labels,
+	valueLabels
+) {
 	const groups = [];
 	( fields || [] ).forEach( ( field ) => {
+		const names = ( valueLabels && valueLabels[ field ] ) || {};
+		const bucket = ( value, count ) => ( {
+			value,
+			label: Object.hasOwn( names, value )
+				? String( names[ value ] )
+				: value,
+			count,
+		} );
 		const buckets = (
 			( facets && facets[ field ] && facets[ field ].buckets ) ||
 			[]
-		).map( ( b ) => ( {
-			value: String( b.value ),
-			count: Number( b.count ) || 0,
-		} ) );
+		).map( ( b ) => bucket( String( b.value ), Number( b.count ) || 0 ) );
 		const seen = new Set( buckets.map( ( b ) => b.value ) );
 		( ( selected && selected[ field ] ) || [] ).forEach( ( value ) => {
 			if ( ! seen.has( value ) ) {
-				buckets.push( { value, count: 0 } );
+				buckets.push( bucket( value, 0 ) );
 			}
 		} );
 		if ( buckets.length ) {

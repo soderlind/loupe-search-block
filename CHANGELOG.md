@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Author facet, labelled with author names. Needs *Post Author* (`post_author`) to be *Filterable*.
+- Facets for custom taxonomies and for every other *Filterable* field, such as custom fields.
+- *Published* date range filter (From / To). Needs `post_date` to be *Filterable*. Off by default.
+- Block settings: *Show author filter* (on), *Show custom field facets* (on), *Show date filter* (off). *Show category and tag facets* is now *Show taxonomy facets*.
+- Filters `loupe_search_block_facet_fields` and `loupe_search_block_facet_label`.
+
+Completes the filters requested in [soderlind/loupe-search#71](https://github.com/soderlind/loupe-search/issues/71).
+
 ## [1.0.0] - 2026-10-27
 
 ### Added
@@ -16,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Requires Loupe Search 1.4.0 or later. See [soderlind/loupe-search#71](https://github.com/soderlind/loupe-search/issues/71).
 
+[Unreleased]: https://github.com/soderlind/loupe-search-block/compare/1.0.0...HEAD
 [1.0.0]: https://github.com/soderlind/loupe-search-block/releases/tag/1.0.0

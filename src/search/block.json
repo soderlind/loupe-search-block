@@ -6,8 +6,8 @@
 	"title": "Loupe Search",
 	"category": "widgets",
 	"icon": "search",
-	"description": "Search this site with live results as you type, a post type filter, category and tag facets, and sorting.",
-	"keywords": [ "search", "loupe", "facets", "filter" ],
+	"description": "Search this site with live results as you type, a post type filter, taxonomy, author and custom field facets, a date range, and sorting.",
+	"keywords": [ "search", "loupe", "facets", "filter", "author", "date" ],
 	"textdomain": "loupe-search-block",
 	"supports": {
 		"html": false,
@@ -22,6 +22,9 @@
 		"perPage": { "type": "number", "default": 10 },
 		"showTypeFilter": { "type": "boolean", "default": true },
 		"showFacets": { "type": "boolean", "default": true },
+		"showAuthorFilter": { "type": "boolean", "default": true },
+		"showCustomFields": { "type": "boolean", "default": true },
+		"showDateFilter": { "type": "boolean", "default": false },
 		"showSort": { "type": "boolean", "default": true },
 		"defaultSort": {
 			"type": "string",
