@@ -1,64 +1,82 @@
 # Loupe Search Block
 
-A search block for [Loupe Search](https://github.com/soderlind/loupe-search): live results as you type, a post type filter, taxonomy, author and custom-field facets, a date range filter, and sorting.
+Help visitors find the right content without leaving the page. Loupe Search Block adds live search, useful filters, and highlighted results to your WordPress site.
 
-Loupe Search itself is engine-only. This add-on talks to it only through its public REST API ([ADR 0002](https://github.com/soderlind/loupe-search/blob/main/docs/adr/0002-search-block-ships-as-add-on.md)).
+**New here? [Follow the step-by-step tutorial](TUTORIAL.md)** to build your first search page. No coding is needed for the basic setup.
 
+[Quick start](#quick-start) · [Block settings](#block-settings) · [Troubleshooting](TUTORIAL.md#troubleshooting) · [Developer notes](#developer-notes)
 
+## See it in action
+
+The demo shows live search, author and custom-field filters, a published-date range, sorting, and pagination.
 
 https://github.com/user-attachments/assets/2a1d6865-4ebb-41eb-9a22-ca9ca5e46bdb
 
+## What visitors can do
 
+- **Search as they type.** Results update inside the block, with matching words highlighted.
+- **Narrow the results.** Filter by content type, category, tag, custom taxonomy, author, or custom field.
+- **Choose a date range.** Find content published between two dates.
+- **Change the order.** Sort by relevance, newest, oldest, or title.
+- **Browse more results.** Move between result pages without reloading the page.
+
+The checkbox filters are also called **facets**. Each value shows a matching-result count. You choose which filters visitors see.
+
+Without JavaScript, the block still works as a standard search form. If Loupe Search's Search insights is enabled, only settled or submitted queries are counted, rather than every keystroke.
 
 ## Requirements
 
-- WordPress 6.9+
-- PHP 8.3+
-- [Loupe Search](https://github.com/soderlind/loupe-search) 1.4.0+ (needs the `GET /search-fields` route)
+- WordPress 6.9 or later
+- PHP 8.3 or later
+- [Loupe Search](https://github.com/soderlind/loupe-search) 1.4.0 or later, installed and active
 
-## Features
+Loupe Search builds the search index; this add-on provides the search block.
 
-- **Search as you type**, with results, facets, sorting and pagination inside the block (Interactivity API).
-- **Post type filter** for every post type Loupe Search indexes.
-- **Taxonomy facets** (categories, tags and custom taxonomies) with result counts, for fields marked *Filterable* in Settings → Loupe Search.
-- **Author facet** with result counts, showing author names. Mark *Post Author* (`post_author`) as *Filterable* for the post type.
-- **Custom field facets**: every other *Filterable* field (for example a custom field) gets a facet with result counts.
-- **Date range filter** (*Published* From / To). Needs `post_date` to be *Filterable*. Off by default.
-- **Sort**: Relevance, Newest first, Oldest first, Title A–Z, Title Z–A. Date sorts need `post_date` to be *Sortable*; title sorts need `post_title` to be *Sortable*. Options that are not allowed are hidden.
-- **Highlighted snippets** around the matched words.
-- **Works without JavaScript**: the block falls back to a plain search form that submits `?s=` to the site's search page.
-- **Search insights**: only the query a visitor settles on (or submits with Enter) is counted in Loupe Search's [Search insights](https://github.com/soderlind/loupe-search#search-insights), so search-as-you-type does not inflate the numbers.
+## Quick start
 
-Facets and sorts follow Loupe Search's rules: when a search covers several post types, a field is only offered if it is allowed for all of them.
+1. Install and activate **Loupe Search** and **Loupe Search Block**. Use the ready-to-install `loupe-search-block.zip` from [Releases](https://github.com/soderlind/loupe-search-block/releases), not GitHub's **Source code** ZIP.
+2. Go to **Settings → Loupe Search → Fields**, choose the content types to search, and save your settings.
+3. Open the **Dashboard** tab, click **Reindex now**, and keep it open until indexing finishes.
+4. Create or edit a page. Click **+**, search for **Loupe Search**, and insert that block.
+5. Publish the page, open it on the front end, and search for a word in your published content.
 
-## Usage
+**Want author, date, or custom-field filters?** The [tutorial](TUTORIAL.md#4-enable-the-filters-you-need) walks through the field settings and block switches you need.
 
-1. Install and activate Loupe Search, and reindex.
-2. Install and activate Loupe Search Block.
-3. Add the **Loupe Search** block (`loupe-search/search`) to a page or template.
+> Turning on a block switch does not enable a field in the search index. Mark the field **Indexable** and **Filterable** in Loupe Search, save, and reindex. Sorting requires **Sortable** too.
 
-### Block settings
+## Block settings
 
-| Setting | Default | Notes |
+Select the block and open its settings sidebar. Settings apply to that block, so different pages can have different search experiences.
+
+| Setting | Default | What it does |
 | --- | --- | --- |
-| Label | “Search” | |
-| Placeholder | “Search…” | |
-| Results per page | 10 | 1–100 |
-| Show post type filter | On | Hidden when only one post type is indexed |
-| Show taxonomy facets | On | Categories, tags and custom taxonomies |
-| Show author filter | On | Needs `post_author` to be *Filterable* |
-| Show custom field facets | On | Every other *Filterable* field |
-| Show date filter | Off | Needs `post_date` to be *Filterable* |
-| Show sort options | On | |
-| Default sort | Relevance | Falls back to Relevance if the field is not *Sortable* |
-| Show excerpt | On | |
-| Highlight matches | On | |
+| Label | Search | Text above the search input |
+| Placeholder | Search… | Hint shown inside the empty input |
+| Results per page | 10 | Choose 1–50 in the editor |
+| Show post type filter | On | Lets visitors choose Posts, Pages, or another indexed content type; hidden if only one is indexed |
+| Show taxonomy facets | On | Checkbox filters for categories, tags, and custom taxonomies |
+| Show author filter | On | Checkbox filter showing author names |
+| Show custom field facets | On | Checkbox filters for other eligible filterable fields |
+| Show date filter | Off | Published **From** and **To** date inputs |
+| Show sort options | On | Offers the sort orders allowed by your field settings |
+| Default sort | Relevance | Initial result order; falls back to Relevance if unavailable |
+| Show excerpt | On | Shows a text snippet below each result |
+| Highlight matches | On | Highlights matching words in titles and snippets |
 
-The block also supports wide/full alignment, margin, padding, and text and background colors.
+You can also adjust alignment, spacing, and text/background colors with the editor's block controls, where supported by your theme.
 
-<img src=".wordpress-org/screenshot-1.png" alt="Loupe Search Block screenshot" border="1">
+**Why might a filter be missing?** It needs an eligible field marked **Filterable**, matching results, and its block switch enabled. With **All types** selected, a field must be available for *every* searched content type. [See the troubleshooting guide](TUTORIAL.md#troubleshooting).
 
-### Filters
+![Loupe Search block showing search results and filters](.wordpress-org/screenshot-1.png)
+
+## Developer notes
+
+The block name is `loupe-search/search`. The add-on communicates with Loupe Search through its public REST API only. See the [architecture decision](https://github.com/soderlind/loupe-search/blob/main/docs/adr/0002-search-block-ships-as-add-on.md).
+
+<details>
+<summary>Customize facet fields and labels with PHP</summary>
+
+Add these filters in a custom plugin or your child theme:
 
 ```php
 // Reorder or remove facet fields, e.g. a geo field that cannot be listed as values.
@@ -72,9 +90,12 @@ add_filter( 'loupe_search_block_facet_label', function ( string $label, string $
 }, 10, 2 );
 ```
 
-Fields returned by `loupe_search_block_facet_fields` that are not *Filterable* are dropped.
+Fields returned by `loupe_search_block_facet_fields` that are not **Filterable** are dropped.
 
-## Development
+</details>
+
+<details>
+<summary>Build and test from source</summary>
 
 ```sh
 npm install
@@ -84,6 +105,8 @@ npm test           # Jest
 composer test      # PHPUnit
 npm run lint:js
 ```
+
+</details>
 
 ## License
 
