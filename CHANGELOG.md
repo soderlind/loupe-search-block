@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Block settings: *Show author filter* (on), *Show custom field facets* (on), *Show date filter* (off). *Show category and tag facets* is now *Show taxonomy facets*.
 - Filters `loupe_search_block_facet_fields` and `loupe_search_block_facet_label`.
 
+### Fixed
+- Handle custom field names that match inherited JavaScript properties.
+- Offer post-prefixed custom fields without exposing core post fields as facets.
+- Resolve author labels without a 500-author cutoff.
+
 Completes the filters requested in [soderlind/loupe-search#71](https://github.com/soderlind/loupe-search/issues/71).
 
 ## [1.0.0] - 2026-10-27

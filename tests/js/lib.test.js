@@ -7,6 +7,7 @@ import {
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
+	selectedValues,
 	sanitizeHighlight,
 	toResult,
 } from '../../src/search/lib';
@@ -194,6 +195,42 @@ describe( 'dateRangeItems', () => {
 } );
 
 describe( 'pruneSelected', () => {
+	it( 'ignores inherited and non-array selections for custom fields', () => {
+		const fields = [ 'constructor', 'toString', '__proto__' ];
+		const selected = {};
+		const facets = Object.fromEntries(
+			fields.map( ( field ) => [
+				field,
+				{ buckets: [ { value: 'A', count: 1 } ] },
+			] )
+		);
+		fields.forEach( ( field ) => {
+			expect( selectedValues( selected, field ) ).toEqual( [] );
+		} );
+		expect(
+			selectedValues( { constructor: 'bad' }, 'constructor' )
+		).toEqual( [] );
+		expect( pruneSelected( selected, fields ) ).toEqual( {} );
+		const ctx = {
+			...baseCtx,
+			profiles: { all: { facets: fields, sorts: [ 'relevance' ] } },
+		};
+		expect( buildPayload( ctx ).filter ).toBeUndefined();
+		expect(
+			buildFacetGroups( fields, facets, selected, {} ).map(
+				( g ) => g.label
+			)
+		).toEqual( fields );
+		const own = Object.fromEntries(
+			fields.map( ( field ) => [ field, [ 'A' ] ] )
+		);
+		expect( pruneSelected( own, fields ) ).toEqual( own );
+		expect(
+			buildPayload( { ...ctx, selected: own } ).filter.items
+		).toHaveLength( 3 );
+		expect( buildFacetGroups( fields, {}, own, {} ) ).toHaveLength( 3 );
+	} );
+
 	it( 'keeps only non-empty selections for allowed fields', () => {
 		expect(
 			pruneSelected(

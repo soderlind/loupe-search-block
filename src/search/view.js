@@ -17,6 +17,7 @@ import {
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
+	selectedValues,
 	format,
 	toResult,
 } from './lib';
@@ -110,7 +111,7 @@ const { state, actions } = store( 'loupe-search/search', {
 		},
 		get bucketChecked() {
 			const ctx = getContext();
-			const values = ctx.selected[ ctx.group.field ] || [];
+			const values = selectedValues( ctx.selected, ctx.group.field );
 			return values.includes( ctx.bucket.value );
 		},
 	},
@@ -188,7 +189,7 @@ const { state, actions } = store( 'loupe-search/search', {
 			const ctx = getContext();
 			const field = ctx.group.field;
 			const value = ctx.bucket.value;
-			const current = ( ctx.selected[ field ] || [] ).filter(
+			const current = selectedValues( ctx.selected, field ).filter(
 				( v ) => v !== value
 			);
 			if ( event.target.checked ) {

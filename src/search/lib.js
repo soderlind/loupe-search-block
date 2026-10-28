@@ -106,7 +106,7 @@ export function buildPayload( ctx, opts = {} ) {
 
 	const items = [];
 	profile.facets.forEach( ( field ) => {
-		const values = ( ctx.selected && ctx.selected[ field ] ) || [];
+		const values = selectedValues( ctx.selected, field );
 		if ( values.length ) {
 			items.push( {
 				type: 'pred',
@@ -153,6 +153,21 @@ export function buildPayload( ctx, opts = {} ) {
 }
 
 /**
+ * Read a field's own array of selected values, never an inherited property.
+ *
+ * @param {Object} selected Field selections.
+ * @param {string} field    Facet field.
+ * @return {Array} Selected values.
+ */
+export function selectedValues( selected, field ) {
+	return selected &&
+		Object.hasOwn( selected, field ) &&
+		Array.isArray( selected[ field ] )
+		? selected[ field ]
+		: [];
+}
+
+/**
  * Keep only the selections that are still valid for the profile.
  *
  * @param {Object}   selected Field => values.
@@ -162,12 +177,14 @@ export function buildPayload( ctx, opts = {} ) {
 export function pruneSelected( selected, facets ) {
 	const out = {};
 	( facets || [] ).forEach( ( field ) => {
-		if (
-			selected &&
-			Array.isArray( selected[ field ] ) &&
-			selected[ field ].length
-		) {
-			out[ field ] = [ ...selected[ field ] ];
+		const values = selectedValues( selected, field );
+		if ( values.length ) {
+			Object.defineProperty( out, field, {
+				value: [ ...values ],
+				enumerable: true,
+				writable: true,
+				configurable: true,
+			} );
 		}
 	} );
 	return out;
@@ -206,7 +223,7 @@ export function buildFacetGroups(
 			[]
 		).map( ( b ) => bucket( String( b.value ), Number( b.count ) || 0 ) );
 		const seen = new Set( buckets.map( ( b ) => b.value ) );
-		( ( selected && selected[ field ] ) || [] ).forEach( ( value ) => {
+		selectedValues( selected, field ).forEach( ( value ) => {
 			if ( ! seen.has( value ) ) {
 				buckets.push( bucket( value, 0 ) );
 			}
@@ -214,7 +231,10 @@ export function buildFacetGroups(
 		if ( buckets.length ) {
 			groups.push( {
 				field,
-				label: ( labels && labels[ field ] ) || field,
+				label:
+					labels && Object.hasOwn( labels, field )
+						? labels[ field ]
+						: field,
 				buckets,
 			} );
 		}

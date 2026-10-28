@@ -83,6 +83,12 @@ final class ConfigTest extends TestCase {
 		$this->assertSame( Config::KIND_AUTHOR, Config::facet_kind( 'post_author' ) );
 		$this->assertSame( Config::KIND_TAXONOMY, Config::facet_kind( 'taxonomy_genre' ) );
 		$this->assertSame( Config::KIND_CUSTOM, Config::facet_kind( '_event_venue' ) );
+		$this->assertSame( Config::KIND_CUSTOM, Config::facet_kind( 'post_rating' ) );
+		$this->assertSame( Config::KIND_CUSTOM, Config::facet_kind( 'post_views_count' ) );
+		$this->assertSame(
+			[ 'post_rating', 'post_views_count' ],
+			Config::profile( [ [ 'filterable' => [ 'post_rating', 'post_views_count', 'post_title' ], 'sortable' => [] ] ] )[ 'facets' ]
+		);
 		$this->assertNull( Config::facet_kind( 'post_date' ) );
 		$this->assertNull( Config::facet_kind( 'post_content' ) );
 		$this->assertNull( Config::facet_kind( 'permalink' ) );

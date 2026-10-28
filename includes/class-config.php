@@ -41,9 +41,16 @@ final class Config {
 	public const FIRST_TAXONOMIES = [ 'taxonomy_category', 'taxonomy_post_tag' ];
 
 	/**
-	 * Fields that are never offered as facets: core post fields use the `post_` prefix.
+	 * Core post fields and result metadata that are never offered as facets.
 	 */
-	private const NON_FACET_FIELDS = [ 'id', 'post_type', 'permalink' ];
+	private const NON_FACET_FIELDS = [
+		'id', 'ID', 'permalink', 'post_date', 'post_date_gmt',
+		'post_content', 'post_title', 'post_excerpt', 'post_status',
+		'comment_status', 'ping_status', 'post_password', 'post_name',
+		'to_ping', 'pinged', 'post_modified', 'post_modified_gmt',
+		'post_content_filtered', 'post_parent', 'guid', 'menu_order',
+		'post_type', 'post_mime_type', 'comment_count',
+	];
 
 	/**
 	 * Sort options and the field each one needs to be Sortable.
@@ -203,7 +210,7 @@ final class Config {
 		if ( str_starts_with( $field, 'taxonomy_' ) ) {
 			return strlen( $field ) > strlen( 'taxonomy_' ) ? self::KIND_TAXONOMY : null;
 		}
-		if ( str_starts_with( $field, 'post_' ) || in_array( $field, self::NON_FACET_FIELDS, true ) ) {
+		if ( in_array( $field, self::NON_FACET_FIELDS, true ) ) {
 			return null;
 		}
 		return self::KIND_CUSTOM;
@@ -296,7 +303,7 @@ final class Config {
 			[
 				'has_published_posts' => array_values( $post_types ),
 				'fields'              => [ 'ID', 'display_name' ],
-				'number'              => 500,
+				'number'              => -1,
 			]
 		);
 
