@@ -67,7 +67,6 @@ You can also adjust alignment, spacing, and text/background colors with the edit
 
 **Why might a filter be missing?** It needs an eligible field marked **Filterable**, matching results, and its block switch enabled. With **All types** selected, a field must be available for *every* searched content type. [See the troubleshooting guide](TUTORIAL.md#troubleshooting).
 
-![Loupe Search block showing search results and filters](.wordpress-org/screenshot-1.png)
 
 ## Developer notes
 
