@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Editor canvas preview shows the search controls enabled for each block. Facet values remain dynamic and load after searching.
+
+### Changed
+- Calmer block settings: separate *Filters* and *Sorting* panels, shorter switch labels, and setup hints shown as help text instead of info boxes. Custom field checkboxes are indented under their switch. No attribute changes; existing blocks are unaffected.
+
 ## [1.1.1] - 2026-10-28
 
 ### Added

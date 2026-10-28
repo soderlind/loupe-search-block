@@ -8,6 +8,35 @@
 		gap: 0.5rem;
 	}
 
+	&__editor-preview {
+		display: grid;
+		gap: 0.75rem;
+		padding: 1rem;
+		border: 1px dashed var(--loupe-search-border);
+		border-radius: 4px;
+
+		.loupe-search-block__form {
+			pointer-events: none;
+		}
+
+		.loupe-search-block__label {
+			margin: 0;
+		}
+
+		button:disabled,
+		input:disabled,
+		select:disabled {
+			opacity: 1;
+			cursor: default;
+		}
+	}
+
+	&__editor-note {
+		margin: 0;
+		font-size: 0.8em;
+		color: var(--loupe-search-muted);
+	}
+
 	&__field {
 		display: flex;
 		gap: 0.5rem;
@@ -53,6 +82,7 @@
 			padding: 0;
 		}
 
+		div,
 		label {
 			display: inline-flex;
 			align-items: center;

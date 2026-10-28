@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Loupe Search Block 1.1.0\n"
+"Project-Id-Version: Loupe Search Block 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/loupe-search-block\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-28T19:18:10+00:00\n"
+"POT-Creation-Date: 2026-10-28T20:09:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: loupe-search-block\n"
@@ -40,43 +40,43 @@ msgid "https://soderlind.no"
 msgstr ""
 
 #: build/search/render.php:24
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "The Loupe Search block needs the Loupe Search plugin to be active."
 msgstr ""
 
 #: build/search/render.php:44
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Relevance"
 msgstr ""
 
 #: build/search/render.php:45
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Newest first"
 msgstr ""
 
 #: build/search/render.php:46
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Oldest first"
 msgstr ""
 
 #: build/search/render.php:47
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Title A–Z"
 msgstr ""
 
 #: build/search/render.php:48
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Title Z–A"
 msgstr ""
 
 #: build/search/render.php:66
 #: build/search/render.php:146
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Search"
 msgstr ""
 
 #: build/search/render.php:67
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Search…"
 msgstr ""
 
@@ -112,26 +112,32 @@ msgid "(no title)"
 msgstr ""
 
 #: build/search/render.php:153
+#: build/search/index.js:2
 msgid "Type"
 msgstr ""
 
 #: build/search/render.php:155
+#: build/search/index.js:2
 msgid "All types"
 msgstr ""
 
 #: build/search/render.php:164
+#: build/search/index.js:2
 msgid "Sort by"
 msgstr ""
 
 #: build/search/render.php:192
+#: build/search/index.js:2
 msgid "Published"
 msgstr ""
 
 #: build/search/render.php:194
+#: build/search/index.js:2
 msgid "From"
 msgstr ""
 
 #: build/search/render.php:198
+#: build/search/index.js:2
 msgid "To"
 msgstr ""
 
@@ -151,103 +157,153 @@ msgstr ""
 msgid "Authors"
 msgstr ""
 
-#: build/search/index.js:1
+#. translators: %s: field name, e.g. "Post Author".
+#: build/search/index.js:2
+#, js-format
+msgid "Needs %s marked Filterable in Settings → Loupe Search → Fields."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Title sorting appears only for post types whose Title is Sortable."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Title sorting needs Title marked Sortable in Settings → Loupe Search → Fields."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Search block preview"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Content type"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Sort order"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Published from"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Published to"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Options appear after searching."
+msgstr ""
+
+#: build/search/index.js:2
+msgid "Preview only. Search and filter values are not interactive in the editor."
+msgstr ""
+
+#: build/search/index.js:2
 msgid "Label"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Placeholder"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Results per page"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Filters and sorting"
+#: build/search/index.js:2
+msgid "Filters"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show post type filter"
+#: build/search/index.js:2
+msgid "Post type filter"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show taxonomy facets"
+#: build/search/index.js:2
+msgid "Hidden when only one content type is indexed."
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
+msgid "Taxonomy facets"
+msgstr ""
+
+#: build/search/index.js:2
+msgid "a taxonomy"
+msgstr ""
+
+#: build/search/index.js:2
 msgid "Categories, tags and custom taxonomies."
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Taxonomy facets appear once a taxonomy, such as Categories or Tags, is marked Filterable in Settings → Loupe Search → Fields."
+#: build/search/index.js:2
+msgid "Author filter"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show author filter"
+#: build/search/index.js:2
+msgid "Post Author"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "The author filter appears once Post Author is marked Filterable in Settings → Loupe Search → Fields."
+#: build/search/index.js:2
+msgid "Filter by post author."
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show custom field facets"
+#: build/search/index.js:2
+msgid "Custom field facets"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Only fields marked Filterable in Loupe Search are listed."
+#: build/search/index.js:2
+msgid "a custom field"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
+msgid "Choose the fields below."
+msgstr ""
+
+#: build/search/index.js:2
 msgid "Custom fields"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Reset to all fields"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Custom field facets appear once a custom field is marked Filterable in Settings → Loupe Search → Fields."
+#: build/search/index.js:2
+msgid "Date filter"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show date filter"
+#: build/search/index.js:2
+msgid "Post Date"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "From and To dates for the publish date."
 msgstr ""
 
-#: build/search/index.js:1
-msgid "The date filter appears once Post Date is marked Filterable in Settings → Loupe Search → Fields."
+#: build/search/index.js:2
+msgid "Sorting"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Show sort options"
+#: build/search/index.js:2
+msgid "Sort options"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
+msgid "Let visitors change the order of results."
+msgstr ""
+
+#: build/search/index.js:2
 msgid "Default sort"
 msgstr ""
 
-#: build/search/index.js:1
-msgid "Title sorting is offered only when a post type whose Title is Sortable is selected. Mark Title as Sortable for every post type in Settings → Loupe Search → Fields to offer it for all types."
-msgstr ""
-
-#: build/search/index.js:1
-msgid "Title sorting is hidden. Mark Title as Sortable in Settings → Loupe Search → Fields to offer it."
-msgstr ""
-
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Results"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Show excerpt"
 msgstr ""
 
-#: build/search/index.js:1
+#: build/search/index.js:2
 msgid "Highlight matches"
 msgstr ""
 
