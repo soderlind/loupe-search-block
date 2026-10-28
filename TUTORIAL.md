@@ -16,7 +16,7 @@ The two plugins have different jobs:
 
 | Plugin | What it does |
 | --- | --- |
-| [Loupe Search](https://github.com/soderlind/loupe-search) 1.4.0+ | Indexes your content and runs searches |
+| [Loupe Search](https://wordpress.org/plugins/loupe-search/) 1.4.0+ | Indexes your content and runs searches |
 | [Loupe Search Block](https://github.com/soderlind/loupe-search-block/releases) | Displays the search input, results, and filters |
 
 ## 1. Install both plugins

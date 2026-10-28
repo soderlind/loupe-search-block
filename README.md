@@ -28,7 +28,7 @@ Without JavaScript, the block still works as a standard search form. If Loupe Se
 
 - WordPress 6.9 or later
 - PHP 8.3 or later
-- [Loupe Search](https://github.com/soderlind/loupe-search) 1.4.0 or later, installed and active
+- [Loupe Search](https://wordpress.org/plugins/loupe-search/) 1.4.0 or later, installed and active
 
 Loupe Search builds the search index; this add-on provides the search block.
 
