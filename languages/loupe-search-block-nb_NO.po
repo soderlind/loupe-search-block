@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Loupe Search Block 1.1.2\n"
+"Project-Id-Version: Loupe Search Block 1.1.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/loupe-search-block\n"
 "PO-Revision-Date: 2026-10-28 23:10+0100\n"
 "Last-Translator: Loupe Search Block contributors\n"
