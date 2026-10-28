@@ -348,13 +348,14 @@ final class Config {
 	public static function editor_data(): array {
 		$types   = self::post_types();
 		$options = self::custom_field_options( $types );
-		$labels  = self::facet_labels( array_keys( $options ) );
+		$fields  = array_map( 'strval', array_keys( $options ) );
+		$labels  = self::facet_labels( $fields );
 		$custom  = [];
-		foreach ( $options as $field => $post_types ) {
+		foreach ( $fields as $field ) {
 			$custom[] = [
 				'field'     => $field,
 				'label'     => $labels[ $field ] ?? self::humanize( $field ),
-				'postTypes' => $post_types,
+				'postTypes' => $options[ $field ],
 			];
 		}
 
