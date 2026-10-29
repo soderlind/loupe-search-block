@@ -4,7 +4,7 @@ Help visitors find the right content without leaving the page. Loupe Search Bloc
 
 **New here? [Follow the step-by-step tutorial](TUTORIAL.md)** to build your first search page. No coding is needed for the basic setup.
 
-[Quick start](#quick-start) · [Block settings](#block-settings) · [Troubleshooting](TUTORIAL.md#troubleshooting) · [Developer notes](#developer-notes)
+[Quick start](#quick-start) · [Block settings](#block-settings) · [Styling](STYLING.md) · [Troubleshooting](TUTORIAL.md#troubleshooting) · [Developer notes](#developer-notes)
 
 ## See it in action
 
