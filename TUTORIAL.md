@@ -8,7 +8,7 @@ This guide takes you from installation to a working search page, then adds autho
 
 You need:
 
-- A WordPress site running WordPress 6.9 or later and PHP 8.3 or later.
+- A WordPress site running WordPress 7.0 or later and PHP 8.3 or later.
 - Administrator access to install plugins and change search settings.
 - Some published content with words you can search for.
 
