@@ -13,7 +13,7 @@
 		"i18n:build": "wp i18n make-mo languages && wp i18n make-php languages && wp i18n make-json languages --no-purge --pretty-print"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^34.0.0"
+		"@wordpress/scripts": "^37.0.0"
 	},
 	"dependencies": {
 		"@wordpress/block-editor": "^19.0.0",
