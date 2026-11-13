@@ -10,14 +10,14 @@
  * Plugin Name:       Loupe Search Block
  * Plugin URI:        https://github.com/soderlind/loupe-search-block
  * Description:       A search block for Loupe Search: live search-as-you-type, post-type filter, taxonomy, author and custom-field facets, a date filter, and sorting.
- * Version:           1.1.3
+ * Version:           1.2.0
  * Author:            Per Soderlind
  * Author URI:        https://soderlind.no
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       loupe-search-block
  * Domain Path:       /languages
- * Requires at least: 6.9
+ * Requires at least: 7.0
  * Requires PHP:      8.3
  * Requires Plugins:  loupe-search
  */
@@ -26,7 +26,7 @@ namespace Soderlind\Plugin\LoupeSearchBlock;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '1.1.3';
+const VERSION = '1.2.0';
 const FILE    = __FILE__;
 
 require_once __DIR__ . '/includes/class-config.php';

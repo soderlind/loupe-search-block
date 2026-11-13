@@ -26,7 +26,7 @@ Without JavaScript, the block still works as a standard search form. If Loupe Se
 
 ## Requirements
 
-- WordPress 6.9 or later
+- WordPress 7.0 or later
 - PHP 8.3 or later
 - [Loupe Search](https://wordpress.org/plugins/loupe-search/) 1.4.0 or later, installed and active
 
