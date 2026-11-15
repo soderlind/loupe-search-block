@@ -70,7 +70,13 @@ $loupe_uid         = wp_unique_id( 'loupe-search-' );
 wp_interactivity_state(
 	'loupe-search/search',
 	[
-		'restUrl' => rest_url( 'loupe-search/v1/search' ),
+		/**
+		 * Filters the REST URL the block searches, e.g. to add a language parameter.
+		 *
+		 * @since 1.3.0
+		 * @param string $url REST URL of Loupe Search's POST /search endpoint.
+		 */
+		'restUrl' => (string) apply_filters( 'loupe_search_block_rest_url', rest_url( 'loupe-search/v1/search' ) ),
 		'nonce'   => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 		'i18n'    => [
 			/* translators: %d: number of search results. */

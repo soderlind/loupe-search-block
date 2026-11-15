@@ -82,7 +82,7 @@ Norwegian Bokmål (`nb_NO`) is included for the editor and front end. Select **N
 After changing translations, run `npm run i18n:build` to regenerate the bundled MO, PHP (`.l10n.php`) and JavaScript JSON files. After changing source strings, run `npm run build` and `npm run i18n:make-pot` first, then update the PO file.
 
 <details>
-<summary>Customize facet fields and labels with PHP</summary>
+<summary>Customize facet fields, labels and the REST URL with PHP</summary>
 
 Add these filters in a custom plugin or your child theme:
 
@@ -99,6 +99,14 @@ add_filter( 'loupe_search_block_facet_label', function ( string $label, string $
 ```
 
 Fields returned by `loupe_search_block_facet_fields` that are not **Filterable** are dropped.
+
+Change the REST URL the block searches with `loupe_search_block_rest_url`, for example to add a language parameter. [Loupe Search Multilingual](https://github.com/soderlind/loupe-search-multilingual) uses it so visitors only find posts in the page's language.
+
+```php
+add_filter( 'loupe_search_block_rest_url', function ( string $url ) {
+	return add_query_arg( 'lang', 'de', $url );
+} );
+```
 
 </details>
 
