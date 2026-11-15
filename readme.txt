@@ -5,7 +5,7 @@ Requires at least: 7.0
 Tested up to: 6.9
 Requires PHP: 8.3
 Requires Plugins: loupe-search
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL-2.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -51,6 +51,9 @@ Title sorting needs `post_title` to be *Sortable* in Settings â†’ Loupe Search â
 Yes, if Search insights is enabled in Loupe Search. Only the query a visitor settles on, or submits with Enter, is counted.
 
 == Changelog ==
+
+= 1.3.0 =
+* New filter `loupe_search_block_rest_url` to change the REST URL the block searches. Loupe Search Multilingual uses it to search the page's language.
 
 = 1.2.0 =
 * Requires WordPress 7.0 or later.
