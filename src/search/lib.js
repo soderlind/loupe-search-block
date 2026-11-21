@@ -153,6 +153,31 @@ export function buildPayload( ctx, opts = {} ) {
 }
 
 /**
+ * Payloads that count each facet field with a selection as if its own
+ * selection were empty, so the field's other values stay visible and can be
+ * combined (OR). Other filters still apply.
+ *
+ * @param {Object} ctx Block context.
+ * @return {Array<{field: string, payload: Object}>} One payload per field with a selection.
+ */
+export function disjunctiveFacetPayloads( ctx ) {
+	const profile = profileFor( ctx.profiles, ctx.postType );
+	return profile.facets
+		.filter( ( field ) => selectedValues( ctx.selected, field ).length )
+		.map( ( field ) => {
+			const payload = buildPayload(
+				{ ...ctx, selected: { ...ctx.selected, [ field ]: [] } },
+				{ size: 1 }
+			);
+			delete payload.sort;
+			payload.facets = [
+				{ type: 'terms', field, size: FACET_SIZE, minCount: 1 },
+			];
+			return { field, payload };
+		} );
+}
+
+/**
  * Read a field's own array of selected values, never an inherited property.
  *
  * @param {Object} selected Field selections.

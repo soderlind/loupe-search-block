@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/2a1d6865-4ebb-41eb-9a22-ca9ca5e46bdb
 - **Change the order.** Sort by relevance, newest, oldest, or title.
 - **Browse more results.** Move between result pages without reloading the page.
 
-The checkbox filters are also called **facets**. Each value shows a matching-result count. You choose which filters visitors see.
+The checkbox filters are also called **facets**. Each value shows a matching-result count. You choose which filters visitors see. Ticking several values in one filter shows results matching any of them; ticking values in different filters shows results matching all of them.
 
 Without JavaScript, the block still works as a standard search form. If Loupe Search's Search insights is enabled, only settled or submitted queries are counted, rather than every keystroke.
 
@@ -120,10 +120,21 @@ npm run build      # or: npm start
 npm test           # Jest
 composer test      # PHPUnit
 npm run lint:js
+npm run test:acceptance   # Playwright, see tests/acceptance/CRITERIA.md
 ```
+
+The acceptance suite runs against a Local site and seeds its own fixtures. See [tests/acceptance/CRITERIA.md](tests/acceptance/CRITERIA.md) for the environment it expects.
 
 </details>
 
 ## License
 
 GPL-2.0-or-later. See [LICENSE](LICENSE).
+
+## AI contribution attribution
+
+AI-assisted contributions carry a trailer in this format:
+
+`Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]`
+
+List only specialized analysis tools, not basic tools such as git, editors or compilers.

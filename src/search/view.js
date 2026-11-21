@@ -14,6 +14,7 @@ import {
 	IDLE_COUNT_MS,
 	buildFacetGroups,
 	buildPayload,
+	disjunctiveFacetPayloads,
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
@@ -239,6 +240,14 @@ const { state, actions } = store( 'loupe-search/search', {
 			ctx.error = false;
 
 			try {
+				// Facet counts that ignore their own field's selection; best effort.
+				const facetRequests = disjunctiveFacetPayloads( ctx ).map(
+					( { field, payload } ) =>
+						request( payload )
+							.then( ( r ) => ( r.ok ? r.json() : null ) )
+							.then( ( d ) => [ field, d?.facets?.[ field ] ] )
+							.catch( () => [ field, undefined ] )
+				);
 				const response = yield request(
 					buildPayload( ctx, { countSearch } )
 				);
@@ -246,6 +255,13 @@ const { state, actions } = store( 'loupe-search/search', {
 					throw new Error( String( response.status ) );
 				}
 				const data = yield response.json();
+				const facets = { ...( data.facets || {} ) };
+				const overrides = yield Promise.all( facetRequests );
+				overrides.forEach( ( [ field, facet ] ) => {
+					if ( facet ) {
+						facets[ field ] = facet;
+					}
+				} );
 				if ( id !== ctx.requestId ) {
 					return;
 				}
@@ -262,7 +278,7 @@ const { state, actions } = store( 'loupe-search/search', {
 				ctx.totalPages = Number( data.pagination?.total_pages ) || 0;
 				ctx.facetGroups = buildFacetGroups(
 					profileFor( ctx.profiles, ctx.postType ).facets,
-					data.facets,
+					facets,
 					ctx.selected,
 					ctx.facetLabels,
 					ctx.valueLabels
