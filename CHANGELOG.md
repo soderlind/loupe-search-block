@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-11-21
+
+### Fixed
+- Checking a facet value no longer hides the field's other values, so several values in one facet can be combined (OR). Counts for a field with a selection ignore that field's own selection.
+
+### Added
+- Playwright acceptance suite (`npm run test:acceptance`) covering search, sorting, the date range, pagination, facets, block settings and the editor.
+
 ## [1.3.0] - 2026-11-15
 
 ### Added
