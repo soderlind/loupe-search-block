@@ -34,34 +34,47 @@ export function wp( ...args: string[] ): string {
 
 const SEMANTIC_KEYS = [ 'hybrid_frontend', 'hybrid_rest' ] as const;
 
-/** Write semantic settings without the sanitize callback or the target-change hooks. */
-function putSemantic( values: Record< string, unknown > ): void {
-	const json = JSON.stringify( values ).replace( /'/g, "\\'" );
-	wp( 'eval', `$s = get_option("loupe_semantic_settings", []); if ( ! is_array( $s ) ) { return; } $s = array_merge( $s, json_decode('${ json }', true) ); remove_all_filters("sanitize_option_loupe_semantic_settings"); remove_all_actions("update_option_loupe_semantic_settings"); update_option("loupe_semantic_settings", $s);` );
+/** Write semantic settings without the sanitize callback or the target-change hooks; `remove` keys are unset. */
+function putSemantic( values: Record< string, unknown >, remove: string[] = [] ): void {
+	const json = JSON.stringify( { values, remove } ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" );
+	wp( 'eval', `$s = get_option("loupe_semantic_settings", []); if ( ! is_array( $s ) ) { return; } $c = json_decode('${ json }', true); $s = array_diff_key( array_merge( $s, (array) $c["values"] ), array_flip( $c["remove"] ) ); remove_all_filters("sanitize_option_loupe_semantic_settings"); remove_all_actions("update_option_loupe_semantic_settings"); update_option("loupe_semantic_settings", $s);` );
 }
 
-/** Turn hybrid search off for the run, remembering the original values once. */
+type SemanticStash = { values: Record< string, unknown >; absent: string[]; skip?: boolean };
+
+/** Turn hybrid search off for the run, remembering the original values (and absent keys) once. */
 export function pauseHybrid(): void {
 	if ( ! fs.existsSync( SEMANTIC_STASH ) ) {
 		const raw = wp( 'eval', 'echo wp_json_encode( get_option( "loupe_semantic_settings", null ) );' );
 		const settings = JSON.parse( raw || 'null' );
 		if ( ! settings || typeof settings !== 'object' ) {
-			fs.writeFileSync( SEMANTIC_STASH, '{}' );
+			const stash: SemanticStash = { values: {}, absent: [], skip: true };
+			fs.writeFileSync( SEMANTIC_STASH, JSON.stringify( stash ) );
 			return;
 		}
-		const original = Object.fromEntries( SEMANTIC_KEYS.map( ( k ) => [ k, settings[ k ] ] ) );
-		fs.writeFileSync( SEMANTIC_STASH, JSON.stringify( original ) );
+		const stash: SemanticStash = { values: {}, absent: [] };
+		SEMANTIC_KEYS.forEach( ( k ) => {
+			if ( Object.hasOwn( settings, k ) ) {
+				stash.values[ k ] = settings[ k ];
+			} else {
+				stash.absent.push( k );
+			}
+		} );
+		fs.writeFileSync( SEMANTIC_STASH, JSON.stringify( stash ) );
 	}
-	putSemantic( Object.fromEntries( SEMANTIC_KEYS.map( ( k ) => [ k, false ] ) ) );
+	const stash: SemanticStash = JSON.parse( fs.readFileSync( SEMANTIC_STASH, 'utf8' ) );
+	if ( ! stash.skip ) {
+		putSemantic( Object.fromEntries( SEMANTIC_KEYS.map( ( k ) => [ k, false ] ) ) );
+	}
 }
 
 export function restoreHybrid(): void {
 	if ( ! fs.existsSync( SEMANTIC_STASH ) ) {
 		return;
 	}
-	const original = JSON.parse( fs.readFileSync( SEMANTIC_STASH, 'utf8' ) );
-	if ( Object.keys( original ).length ) {
-		putSemantic( original );
+	const stash: SemanticStash = JSON.parse( fs.readFileSync( SEMANTIC_STASH, 'utf8' ) );
+	if ( ! stash.skip ) {
+		putSemantic( stash.values ?? {}, stash.absent ?? [] );
 	}
 	fs.unlinkSync( SEMANTIC_STASH );
 	clearSearchCache();
@@ -71,10 +84,11 @@ export function clearSearchCache(): void {
 	wp( 'eval', 'global $wpdb; $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE \'%loupe\\\\_search\\\\_cache%\'"); wp_cache_flush();' );
 }
 
-/** Seed fixtures and field settings; reindex when anything changed. */
+/** Seed fixtures and field settings; reindex the post types the seed reports. */
 export function seed(): void {
-	if ( wp( 'eval-file', SEED_FILE ).split( '\n' ).pop() === 'changed' ) {
-		wp( 'loupe-search', 'reindex', '--post-types=post,page' );
+	const last = wp( 'eval-file', SEED_FILE ).split( '\n' ).pop() ?? '';
+	if ( last.startsWith( 'reindex:' ) ) {
+		wp( 'loupe-search', 'reindex', `--post-types=${ last.slice( 'reindex:'.length ) }` );
 	}
 	clearSearchCache();
 }

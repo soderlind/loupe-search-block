@@ -3,22 +3,51 @@
  * Seed the acceptance-test fixtures on the loupe subsite. Idempotent.
  *
  * Run with: wp eval-file tests/acceptance/helpers/seed.php
- * Prints "changed" when fields or fixtures changed (a reindex is needed), else "unchanged".
+ * Prints "reindex:<types>" with the post types that need a reindex, else "unchanged".
  */
 
 $changed = false;
+$reindex = [];
 
-// Date sort and the date range filter need post_date Indexable, Filterable and Sortable.
-$fields = get_option( 'loupe_search_fields', [] );
+$utils = '\\Soderlind\\Plugin\\LoupeSearch\\WP_Loupe_Utils';
+$types = class_exists( $utils ) ? $utils::get_indexed_post_types() : [ 'post', 'page' ];
+if ( array_diff( [ 'post', 'page' ], $types ) ) {
+	WP_CLI::error( 'Loupe Search must index both post and page. Indexed: ' . implode( ', ', $types ) );
+}
+
+// Field flags the suite needs. The "All types" profile uses fields shared by every indexed type.
+$need = [];
+foreach ( $types as $type ) {
+	$need[ $type ] = [
+		'post_title'  => [ 'sortable' ],
+		'post_author' => [ 'filterable' ],
+	];
+}
+// Loupe Search always advertises post_date, so the date controls only need it on the fixture types.
 foreach ( [ 'post', 'page' ] as $type ) {
-	$want = [ 'indexable' => true, 'weight' => 1.0, 'filterable' => true, 'sortable' => true, 'sort_direction' => 'desc' ];
-	$have = $fields[ $type ][ 'post_date' ] ?? [];
-	if ( empty( $have[ 'indexable' ] ) || empty( $have[ 'filterable' ] ) || empty( $have[ 'sortable' ] ) ) {
-		$fields[ $type ][ 'post_date' ] = $want;
-		$changed                        = true;
+	$need[ $type ][ 'post_date' ] = [ 'filterable', 'sortable' ];
+}
+$need[ 'post' ] += [
+	'taxonomy_category' => [ 'filterable' ],
+	'taxonomy_post_tag' => [ 'filterable' ],
+	'fakerpress_flag'   => [ 'filterable' ],
+];
+
+$fields = get_option( 'loupe_search_fields', [] );
+foreach ( $need as $type => $type_fields ) {
+	foreach ( $type_fields as $field => $flags ) {
+		$have = $fields[ $type ][ $field ] ?? [];
+		$want = $have + [ 'weight' => 1.0, 'sort_direction' => 'desc' ];
+		foreach ( array_merge( [ 'indexable' ], $flags ) as $flag ) {
+			$want[ $flag ] = true;
+		}
+		if ( $want != $have ) {
+			$fields[ $type ][ $field ] = $want;
+			$reindex[ $type ]          = true;
+		}
 	}
 }
-if ( $changed ) {
+if ( $reindex ) {
 	update_option( 'loupe_search_fields', $fields );
 }
 
@@ -30,8 +59,16 @@ $term = static function ( string $name, string $taxonomy ): int {
 	return (int) $found[ 'term_id' ];
 };
 
-$per     = get_user_by( 'login', 'per' )->ID;
-$pertest = get_user_by( 'login', 'pertest' )->ID;
+$users = [];
+foreach ( [ 'per', 'pertest' ] as $login ) {
+	$user = get_user_by( 'login', $login );
+	if ( ! $user ) {
+		WP_CLI::error( "Fixture author '{$login}' is missing. Create the user and rerun." );
+	}
+	$users[ $login ] = (int) $user->ID;
+}
+$per     = $users[ 'per' ];
+$pertest = $users[ 'pertest' ];
 
 // Title, type, date, author, category, tags, fakerpress_flag.
 $fixtures = [
@@ -55,6 +92,10 @@ foreach ( $fixtures as [ $name, $type, $date, $author, $category, $tags, $flag ]
 	$title = 'Zephyrlupe ' . $name;
 	$found = get_posts( [ 'title' => $title, 'post_type' => $type, 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ] );
 	if ( $found ) {
+		if ( (int) get_post_field( 'post_author', $found[ 0 ] ) !== $author ) {
+			wp_update_post( [ 'ID' => $found[ 0 ], 'post_author' => $author ] );
+			$changed = true;
+		}
 		continue;
 	}
 	$args = [
@@ -78,5 +119,9 @@ foreach ( $fixtures as [ $name, $type, $date, $author, $category, $tags, $flag ]
 	}
 	$changed = true;
 }
+if ( $changed ) {
+	$reindex[ 'post' ] = true;
+	$reindex[ 'page' ] = true;
+}
 
-echo $changed ? 'changed' : 'unchanged';
+echo $reindex ? 'reindex:' . implode( ',', array_keys( $reindex ) ) : 'unchanged';

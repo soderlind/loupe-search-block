@@ -7,11 +7,12 @@ The contract for `tests/acceptance/*.spec.ts`. Every test title starts with the 
 - Site: `http://plugins.local/loupe/` (Local multisite subsite running the git checkouts of loupe-search, loupe-search-block, loupe-semantic-search). No `webServer`; Local must be running.
 - Browser: Chromium desktop. UI language: English.
 - Run: `npm run test:acceptance`.
+- Prerequisites: Loupe Search indexes `post` and `page`; users `per` and `pertest` exist. Setup fails with a clear message otherwise.
 - Global setup (idempotent):
   - Logs in as the Local one-click admin.
-  - Makes `post_date` Indexable, Filterable and Sortable for `post` and `page` in `loupe_search_fields`.
-  - Seeds the fixtures below, reindexes `post` and `page`.
-  - Turns semantic hybrid search off for the run (restored by teardown).
+  - Turns on the field settings the suite needs in `loupe_search_fields`, keeping other settings: for every indexed type `post_title` Sortable and `post_author` Filterable; for `post` and `page` `post_date` Filterable and Sortable; for `post` also `taxonomy_category`, `taxonomy_post_tag` and `fakerpress_flag` Filterable (all Indexable).
+  - Seeds the fixtures below (and repairs their authors), then reindexes only the post types whose settings or fixtures changed.
+  - Turns semantic hybrid search off for the run. Teardown restores the original values and removes keys that were absent.
 - Each spec creates the pages holding the block in `beforeAll` and deletes them in `afterAll`. Fixture content is kept.
 
 ## Fixtures

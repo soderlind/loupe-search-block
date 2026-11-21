@@ -6,6 +6,7 @@ import {
 	decodeEntities,
 	disjunctiveFacetPayloads,
 	format,
+	mergeFacetOverrides,
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
@@ -309,6 +310,39 @@ describe( 'disjunctiveFacetPayloads', () => {
 		expect(
 			disjunctiveFacetPayloads( { ...baseCtx, postType: 'post' } )
 		).toEqual( [] );
+	} );
+} );
+
+describe( 'mergeFacetOverrides', () => {
+	const main = {
+		taxonomy_category: { buckets: [ { value: 'Rare', count: 2 } ] },
+		post_author: { buckets: [ { value: '1', count: 2 } ] },
+	};
+
+	it( 'replaces a distribution but keeps selected values missing from it', () => {
+		const merged = mergeFacetOverrides(
+			main,
+			[
+				[
+					'taxonomy_category',
+					{ buckets: [ { value: 'News', count: 9 } ] },
+				],
+			],
+			{ taxonomy_category: [ 'Rare', 'Gone' ] }
+		);
+		expect( merged.taxonomy_category.buckets ).toEqual( [
+			{ value: 'News', count: 9 },
+			{ value: 'Rare', count: 2 },
+		] );
+		expect( merged.post_author ).toBe( main.post_author );
+	} );
+
+	it( 'keeps the main distribution when the override failed', () => {
+		expect(
+			mergeFacetOverrides( main, [ [ 'post_author', undefined ] ], {
+				post_author: [ '1' ],
+			} )
+		).toEqual( main );
 	} );
 } );
 
