@@ -11,9 +11,12 @@ import {
 
 import {
 	DEBOUNCE_MS,
+	FACET_TIMEOUT_MS,
 	IDLE_COUNT_MS,
 	buildFacetGroups,
 	buildPayload,
+	disjunctiveFacetPayloads,
+	mergeFacetOverrides,
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
@@ -46,7 +49,7 @@ function reset( ctx ) {
 	ctx.searched = false;
 }
 
-function request( payload ) {
+function request( payload, signal ) {
 	const headers = { 'Content-Type': 'application/json' };
 	if ( state.nonce ) {
 		headers[ 'X-WP-Nonce' ] = state.nonce;
@@ -56,6 +59,7 @@ function request( payload ) {
 		credentials: 'same-origin',
 		headers,
 		body: JSON.stringify( payload ),
+		signal,
 	} );
 }
 
@@ -238,7 +242,18 @@ const { state, actions } = store( 'loupe-search/search', {
 			ctx.loading = true;
 			ctx.error = false;
 
+			// Facet counts that ignore their own field's selection; best effort,
+			// aborted if they lag the main response by more than FACET_TIMEOUT_MS.
+			const facetAbort = new AbortController();
+			let facetTimer;
 			try {
+				const facetRequests = disjunctiveFacetPayloads( ctx ).map(
+					( { field, payload } ) =>
+						request( payload, facetAbort.signal )
+							.then( ( r ) => ( r.ok ? r.json() : null ) )
+							.then( ( d ) => [ field, d?.facets?.[ field ] ] )
+							.catch( () => [ field, undefined ] )
+				);
 				const response = yield request(
 					buildPayload( ctx, { countSearch } )
 				);
@@ -246,6 +261,16 @@ const { state, actions } = store( 'loupe-search/search', {
 					throw new Error( String( response.status ) );
 				}
 				const data = yield response.json();
+				facetTimer = setTimeout(
+					() => facetAbort.abort(),
+					FACET_TIMEOUT_MS
+				);
+				const overrides = yield Promise.all( facetRequests );
+				const facets = mergeFacetOverrides(
+					data.facets,
+					overrides,
+					ctx.selected
+				);
 				if ( id !== ctx.requestId ) {
 					return;
 				}
@@ -262,7 +287,7 @@ const { state, actions } = store( 'loupe-search/search', {
 				ctx.totalPages = Number( data.pagination?.total_pages ) || 0;
 				ctx.facetGroups = buildFacetGroups(
 					profileFor( ctx.profiles, ctx.postType ).facets,
-					data.facets,
+					facets,
 					ctx.selected,
 					ctx.facetLabels,
 					ctx.valueLabels
@@ -275,6 +300,8 @@ const { state, actions } = store( 'loupe-search/search', {
 					ctx.totalPages = 0;
 				}
 			} finally {
+				clearTimeout( facetTimer );
+				facetAbort.abort();
 				if ( id === ctx.requestId ) {
 					ctx.loading = false;
 					ctx.searched = true;

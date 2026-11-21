@@ -4,7 +4,9 @@ import {
 	buildPayload,
 	dateRangeItems,
 	decodeEntities,
+	disjunctiveFacetPayloads,
 	format,
+	mergeFacetOverrides,
 	normalizeQuery,
 	profileFor,
 	pruneSelected,
@@ -265,6 +267,82 @@ describe( 'buildPayload', () => {
 		expect( payload.filter ).toBeDefined();
 		expect( payload.facets ).toBeUndefined();
 		expect( payload.attributesToHighlight ).toBeUndefined();
+	} );
+} );
+
+describe( 'disjunctiveFacetPayloads', () => {
+	it( 'counts each selected field without its own selection but with the other filters', () => {
+		const requests = disjunctiveFacetPayloads( {
+			...baseCtx,
+			postType: 'post',
+			sort: 'title_asc',
+			selected: {
+				taxonomy_category: [ 'News', 'Sport' ],
+				taxonomy_post_tag: [],
+				post_author: [ '14' ],
+			},
+		} );
+		expect( requests.map( ( r ) => r.field ) ).toEqual( [
+			'taxonomy_category',
+			'post_author',
+		] );
+		const [ category, author ] = requests.map( ( r ) => r.payload );
+		expect( category.page ).toEqual( { number: 1, size: 1 } );
+		expect( category.sort ).toBeUndefined();
+		expect( category.countSearch ).toBeUndefined();
+		expect( category.facets ).toEqual( [
+			{ type: 'terms', field: 'taxonomy_category', size: 10, minCount: 1 },
+		] );
+		expect( category.filter.items.map( ( i ) => i.field ) ).toEqual( [
+			'post_author',
+		] );
+		expect( author.filter.items ).toEqual( [
+			{
+				type: 'pred',
+				field: 'taxonomy_category',
+				op: 'in',
+				value: [ 'News', 'Sport' ],
+			},
+		] );
+	} );
+
+	it( 'returns nothing without selections', () => {
+		expect(
+			disjunctiveFacetPayloads( { ...baseCtx, postType: 'post' } )
+		).toEqual( [] );
+	} );
+} );
+
+describe( 'mergeFacetOverrides', () => {
+	const main = {
+		taxonomy_category: { buckets: [ { value: 'Rare', count: 2 } ] },
+		post_author: { buckets: [ { value: '1', count: 2 } ] },
+	};
+
+	it( 'replaces a distribution but keeps selected values missing from it', () => {
+		const merged = mergeFacetOverrides(
+			main,
+			[
+				[
+					'taxonomy_category',
+					{ buckets: [ { value: 'News', count: 9 } ] },
+				],
+			],
+			{ taxonomy_category: [ 'Rare', 'Gone' ] }
+		);
+		expect( merged.taxonomy_category.buckets ).toEqual( [
+			{ value: 'News', count: 9 },
+			{ value: 'Rare', count: 2 },
+		] );
+		expect( merged.post_author ).toBe( main.post_author );
+	} );
+
+	it( 'keeps the main distribution when the override failed', () => {
+		expect(
+			mergeFacetOverrides( main, [ [ 'post_author', undefined ] ], {
+				post_author: [ '1' ],
+			} )
+		).toEqual( main );
 	} );
 } );
 

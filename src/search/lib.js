@@ -5,6 +5,8 @@
 
 export const IDLE_COUNT_MS = 1500;
 export const DEBOUNCE_MS = 300;
+// How long results wait for the per-field facet counts after the main response.
+export const FACET_TIMEOUT_MS = 3000;
 export const FACET_SIZE = 10;
 export const DATE_FIELD = 'post_date';
 
@@ -150,6 +152,62 @@ export function buildPayload( ctx, opts = {} ) {
 	}
 
 	return payload;
+}
+
+/**
+ * Payloads that count each facet field with a selection as if its own
+ * selection were empty, so the field's other values stay visible and can be
+ * combined (OR). Other filters still apply.
+ *
+ * @param {Object} ctx Block context.
+ * @return {Array<{field: string, payload: Object}>} One payload per field with a selection.
+ */
+export function disjunctiveFacetPayloads( ctx ) {
+	const profile = profileFor( ctx.profiles, ctx.postType );
+	return profile.facets
+		.filter( ( field ) => selectedValues( ctx.selected, field ).length )
+		.map( ( field ) => {
+			const payload = buildPayload(
+				{ ...ctx, selected: { ...ctx.selected, [ field ]: [] } },
+				{ size: 1 }
+			);
+			delete payload.sort;
+			payload.facets = [
+				{ type: 'terms', field, size: FACET_SIZE, minCount: 1 },
+			];
+			return { field, payload };
+		} );
+}
+
+/**
+ * Replace facet distributions with the disjunctive ones.
+ *
+ * A selected value can fall outside an override's top buckets; it then keeps
+ * its bucket from the main response so its count is not shown as zero.
+ *
+ * @param {Object} facets    Facets from the main response.
+ * @param {Array}  overrides [field, facet] pairs; facet is undefined when its request failed.
+ * @param {Object} selected  Field selections.
+ * @return {Object} Merged facets.
+ */
+export function mergeFacetOverrides( facets, overrides, selected ) {
+	const merged = { ...( facets || {} ) };
+	overrides.forEach( ( [ field, facet ] ) => {
+		if ( ! facet ) {
+			return;
+		}
+		const buckets = [ ...( facet.buckets || [] ) ];
+		const seen = new Set( buckets.map( ( b ) => String( b.value ) ) );
+		const main = merged[ field ]?.buckets || [];
+		selectedValues( selected, field ).forEach( ( value ) => {
+			const bucket = main.find( ( b ) => String( b.value ) === value );
+			if ( bucket && ! seen.has( value ) ) {
+				buckets.push( bucket );
+			}
+		} );
+		merged[ field ] = { ...facet, buckets };
+	} );
+	return merged;
 }
 
 /**
