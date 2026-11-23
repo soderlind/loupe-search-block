@@ -5,7 +5,7 @@ Requires at least: 7.0
 Tested up to: 6.9
 Requires PHP: 8.3
 Requires Plugins: loupe-search
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPL-2.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -51,6 +51,9 @@ Title sorting needs `post_title` to be *Sortable* in Settings â†’ Loupe Search â
 Yes, if Search insights is enabled in Loupe Search. Only the query a visitor settles on, or submits with Enter, is counted.
 
 == Changelog ==
+
+= 1.3.2 =
+* Fix: include compiled block assets in GitHub source archives so Composer installs can register the block.
 
 = 1.3.1 =
 * Fix: checking a facet value no longer hides the field's other values, so several values in one facet can be combined. Counts for a field with a selection ignore that field's own selection.
