@@ -1,0 +1,35 @@
+name: Check committed build
+
+# build/ is committed so Composer/Packagist installs get the compiled block.
+# Fail if it is out of sync with src/.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify build/ is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- build)" ]; then
+            git status --short -- build
+            git --no-pager diff --stat -- build
+            echo "::error::build/ is stale. Run 'npm run build' and commit the result."
+            exit 1
+          fi

@@ -1,0 +1,13 @@
+# Keep dev-only files out of tag archives (used by Composer/Packagist dist installs).
+# build/ is committed on purpose: the plugin needs build/search/block.json at runtime.
+/.distignore        export-ignore
+/.gitattributes     export-ignore
+/.github            export-ignore
+/.gitignore         export-ignore
+/.wordpress-org     export-ignore
+/tests              export-ignore
+/phpunit.xml.dist   export-ignore
+/src                export-ignore
+/package.json       export-ignore
+/package-lock.json  export-ignore
+/composer.lock      export-ignore

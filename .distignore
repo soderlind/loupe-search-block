@@ -6,6 +6,7 @@
 .git/
 .github/
 .gitignore
+.gitattributes
 .DS_Store
 .playwright-mcp/
 
